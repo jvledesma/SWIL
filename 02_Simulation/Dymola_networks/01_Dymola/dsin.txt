@@ -1,0 +1,3405 @@
+#1
+char Aclass(3,24)
+Adymosim
+1.4
+Modelica experiment file
+
+
+#    Experiment parameters
+double experiment(7,1)
+       0                   # StartTime    Time at which integration starts
+                           #              (and linearization and trimming time)
+       5                   # StopTime     Time at which integration stops
+       0                   # Increment    Communication step size, if > 0
+     500                   # nInterval    Number of communication intervals, if > 0
+  1.0000000000000000E-04   # Tolerance    Relative precision of signals for
+                           #              simulation, linearization and trimming
+       0                   # MaxFixedStep Maximum step size of fixed step size
+                           #              integrators, if > 0.0
+       8                   # Algorithm    Integration algorithm as integer (1...28)
+                           #
+                           #             | model|       |        | dense | state |
+                           # Algorithm   | typ  | stiff | order  | output| event |
+                           # ------------+------+-------+--------+-------+-------+
+                           #  1 | deabm  |  ode |   no  |  1-12  |  yes  |   no  |
+                           #  2 | lsode1 |  ode |   no  |  1-12  |  yes  |   no  |
+                           #  3 | lsode2 |  ode |  yes  |  1-5   |  yes  |   no  |
+                           #  4 | lsodar |  ode |  both |1-12,1-5|  yes  |  yes  |
+                           #  5 | dopri5 |  ode |   no  |   5    |   no  |   no  |
+                           #  6 | dopri8 |  ode |   no  |   8    |   no  |   no  |
+                           #  7 | grk4t  |  ode |  yes  |   4    |   no  |   no  |
+                           #  8 | dassl  |  dae |  yes  |  1-5   |  yes  |  yes  |
+                           #  9 | odassl | hdae |  yes  |  1-5   |  yes  |  yes  |
+                           # 10 | mexx   | hdae |   no  |  2-24  |   no  |   no  |
+                           # 11 | euler  |  ode |   no  |   1    |   no  |  yes  |
+                           # 12 | rkfix2 |  ode |   no  |   2    |   no  |  yes  |
+                           # 13 | rkfix3 |  ode |   no  |   3    |   no  |  yes  |
+                           # 14 | rkfix4 |  ode |   no  |   4    |   no  |  yes  |
+                           #>=14| others |  ode |yes/no |  2-5   |   yes |  yes  |
+                           # ---+--------+------+-------+--------+-------+-------+
+                           # euler and rkfix have fixed stepsize.
+
+
+#    Method tuning parameters
+double method(27,1)
+       1                   # grid     type of communication time grid, defined by
+                           #          = 1: equidistant points ("Increment/nInterval")
+                           #          = 2: vector of grid points ("tgrid")
+                           #          = 3: variable step integrator (automatically)
+                           #          = 4: model (call of "increment" in Dymola, e.g.
+                           #                      incr=Time > 2 then 0 else 0.1
+                           #                      dummy=increment(incr))
+                           #          grid = 1,3 is stopped by "StopTime"
+                           #          grid = 2   is stopped by "tgrid(last)"
+                           #          grid = 4   runs forever (stopped by model)
+       1                   # nt       Use every NT time instant, if grid = 3
+       3                   # dense    1/2/3 restart/step/interpolate GRID points
+       1                   # evgrid   0/1 do not/save event points in comm. time grid
+       1                   # evu      0/1 U-discontinuity does not/trigger events
+       0                   # evuord       U-discontinuity order to consider (0,1,...)
+       0                   # error    0/1/2 One message/warning/error messages
+       0                   # jac      0/1 Compute jacobian numerically/by BLOCKJ
+       0                   # xd0c     0/1 Compute/set XD0
+       0                   # f3       0/1 Ignore/use F3 of HDAE (= index 1)
+       0                   # f4       0/1 Ignore/use F4 of HDAE (= index 2)
+       0                   # f5       0/1 Ignore/use F5 of HDAE (= invar.)
+       0                   # debug    flags for debug information (1<<0 uses pdebug) 
+     100                   # pdebug       priority of debug information (1...100)
+       0                   # fmax     Maximum number of evaluations of BLOCKF, if > 0
+       0                   # ordmax   Maximum allowed integration order, if > 0
+       0                   # hmax     Maximum absolute stepsize, if > 0
+       0                   # hmin     Minimum absolute stepsize, if > 0 (use with care!)
+       0                   # h0       Stepsize to be attempted on first step, if > 0
+  2.0000000000000000E-14   # teps     Bound to check, if 2 equal time instants
+  1.0000000000000000E-10   # eveps    Hysteresis epsilon at event points
+      20                   # eviter   Maximum number of event iterations
+  9.9999999999999995E-07   # delaym   Minimum time increment in delay buffers
+       1                   # fexcep   0/1 floating exception crashes/stops dymosim
+       1                   # tscale   clock-time = tscale*simulation-time, if grid = 5
+                           #          > 1: simulation too slow
+                           #          = 1: simulation-time = real-time
+                           #          < 1: simulation too fast
+       1                   # shared   (not used)
+    2473                   # memkey   (not used)
+
+
+#    Output parameters
+int settings(13,1)
+ 0                         # lprec    0/1 do not/store result data in double
+ 1                         # lx       0/1 do not/store x  (state variables)
+ 1                         # lxd      0/1 do not/store xd (derivative of states)
+ 1                         # lu       0/1 do not/store u  (input     signals)
+ 1                         # ly       0/1 do not/store y  (output    signals)
+ 0                         # lz       0/1 do not/store z  (indicator signals)
+ 1                         # lw       0/1 do not/store w  (auxiliary signals)
+ 1                         # la       0/1 do not/store a  (alias     signals)
+ 0                         # lperf    0/1 do not/store performance indicators
+ 0                         # levent   0/1 do not/store event point
+ 1                         # lres     0/1 do not/store results on result file
+ 0                         # lshare   0/1 do not/store info data for shared memory on dsshare.txt
+ 1                         # lform    0/1 ASCII/Matlab-binary storage format of results
+                           #              (for simulation/linearization; not for trimming)
+
+
+#    Names of initial variables
+char initialName(1082,44)
+source_qT.m_flow
+source_qT.T
+source_qT.port_b.p
+source_qT.port_b.h_outflow
+pumping1.Tank.diameter
+pumping1.Tank.fluidLevel_max
+pumping1.Tank.fluidLevel_min
+pumping1.Tank.crossArea
+pumping1.Tank.perimeter
+pumping1.Tank.fluidLevel_nom
+pumping1.Tank.E
+pumping1.Tank.der(E)
+pumping1.Tank.fluidLevel
+pumping1.Tank.der(fluidLevel)
+pumping1.Tank.dp
+pumping1.Tank.port_a.p
+pumping1.Tank.port_a.h_outflow
+pumping1.Tank.port_b.p
+pumping1.Tank.port_b.m_flow
+pumping1.Tank.port_b.h_outflow
+pumping1.port_a.h_outflow
+pumping1.port_b.p
+pumping1.port_b.m_flow
+pumping1.port_b.der(m_flow)
+pumping1.port_b.h_outflow
+pumping1.basicPump.port_a.m_flow
+pumping1.basicPump.port_a.h_outflow
+pumping1.basicPump.port_b.p
+pumping1.basicPump.ah_2
+pumping1.basicPump.ah_1
+pumping1.basicPump.ah_0
+pumping1.basicPump.V_flow_min
+pumping1.basicPump.h_p
+pumping1.basicPump.dp
+pumping1.basicPump.V_flow
+pumping1.basicPump1.port_a.m_flow
+pumping1.basicPump1.port_a.h_outflow
+pumping1.basicPump1.ah_2
+pumping1.basicPump1.ah_1
+pumping1.basicPump1.ah_0
+pumping1.basicPump1.V_flow_min
+pumping1.basicPump1.h_p
+pumping1.basicPump1.dp
+pumping1.basicPump1.V_flow
+pumping1.OD_out8.k
+pumping1.OD_Outlet2
+pumping1.valve_Out3.kv
+pumping1.valve_Out3.OD_min
+pumping1.valve_Out3.kvs
+pumping1.valve_Out3.OD_valve
+pumping1.valve_Out3.dp
+pumping1.valve_Out2.port_a.m_flow
+pumping1.valve_Out2.port_a.h_outflow
+pumping1.valve_Out2.kv
+pumping1.valve_Out2.OD_min
+pumping1.valve_Out2.kvs
+pumping1.valve_Out2.OD_valve
+pumping1.valve_Out2.dp
+pumping1.valve_In1.port_b.p
+pumping1.valve_In1.kv
+pumping1.valve_In1.OD_min
+pumping1.valve_In1.kvs
+pumping1.valve_In1.OD_valve
+pumping1.valve_In1.dp
+OD_in1.k
+OD_out1.k
+PWM_out1.k
+consumer_Water1.h
+consumer_Water1.port_a1.p
+consumer_Water1.port_a1.m_flow
+consumer_Water1.port_a1.h_outflow
+consumer_Water1.port_a2.m_flow
+consumer_Water1.port_a2.h_outflow
+consumer_Water1.port_b.m_flow
+consumer_Water1.port_b.h_outflow
+consumer_Water1.h_tank.k
+consumer_Water1.tank_PAir.diameter
+consumer_Water1.tank_PAir.fluidLevel_max
+consumer_Water1.tank_PAir.fluidLevel_min
+consumer_Water1.tank_PAir.crossArea
+consumer_Water1.tank_PAir.volume
+consumer_Water1.tank_PAir.perimeter
+consumer_Water1.tank_PAir.fluidLevel_nom
+consumer_Water1.tank_PAir.E
+consumer_Water1.tank_PAir.der(E)
+consumer_Water1.tank_PAir.fluidLevel
+consumer_Water1.tank_PAir.der(fluidLevel)
+consumer_Water1.tank_PAir.dp
+consumer_Water1.tank_PAir.p0_tank
+consumer_Water1.tank_PAir.port_a1.h_outflow
+consumer_Water1.tank_PAir.port_a3.h_outflow
+consumer_Water1.tank_PAir.port_b.p
+consumer_Water1.tank_PAir.port_b.h_outflow
+consumer_Water1.valve_In1.kv
+consumer_Water1.valve_In1.OD_min
+consumer_Water1.valve_In1.kvs
+consumer_Water1.valve_In1.OD_valve
+consumer_Water1.valve_In1.dp
+consumer_Water1.valve_In2.kv
+consumer_Water1.valve_In2.OD_min
+consumer_Water1.valve_In2.kvs
+consumer_Water1.valve_In2.OD_valve
+consumer_Water1.valve_In2.dp
+consumer_Water1.valve.kv
+consumer_Water1.valve.OD_min
+consumer_Water1.valve.kvs
+consumer_Water1.valve.OD_valve
+consumer_Water1.valve.dp
+OD_in4.k
+OD_in5.k
+OD_out3.k
+consumer_Water2.h
+consumer_Water2.port_a1.p
+consumer_Water2.port_a1.m_flow
+consumer_Water2.port_a1.h_outflow
+consumer_Water2.port_a2.m_flow
+consumer_Water2.port_a2.h_outflow
+consumer_Water2.port_b.m_flow
+consumer_Water2.port_b.h_outflow
+consumer_Water2.h_tank.k
+consumer_Water2.tank_PAir.diameter
+consumer_Water2.tank_PAir.fluidLevel_max
+consumer_Water2.tank_PAir.fluidLevel_min
+consumer_Water2.tank_PAir.crossArea
+consumer_Water2.tank_PAir.volume
+consumer_Water2.tank_PAir.perimeter
+consumer_Water2.tank_PAir.fluidLevel_nom
+consumer_Water2.tank_PAir.E
+consumer_Water2.tank_PAir.der(E)
+consumer_Water2.tank_PAir.fluidLevel
+consumer_Water2.tank_PAir.der(fluidLevel)
+consumer_Water2.tank_PAir.dp
+consumer_Water2.tank_PAir.p0_tank
+consumer_Water2.tank_PAir.port_a1.h_outflow
+consumer_Water2.tank_PAir.port_a3.h_outflow
+consumer_Water2.tank_PAir.port_b.p
+consumer_Water2.tank_PAir.port_b.h_outflow
+consumer_Water2.valve_In1.kv
+consumer_Water2.valve_In1.OD_min
+consumer_Water2.valve_In1.kvs
+consumer_Water2.valve_In1.OD_valve
+consumer_Water2.valve_In1.dp
+consumer_Water2.valve_In2.kv
+consumer_Water2.valve_In2.OD_min
+consumer_Water2.valve_In2.kvs
+consumer_Water2.valve_In2.OD_valve
+consumer_Water2.valve_In2.dp
+consumer_Water2.valve.kv
+consumer_Water2.valve.OD_min
+consumer_Water2.valve.kvs
+consumer_Water2.valve.OD_valve
+consumer_Water2.valve.dp
+OD_in2.k
+OD_in3.k
+OD_out2.k
+pipeC1.D
+pipeC1.L
+pipeC1.Pipe_Heat21.heatport_a.T
+pipeC1.Pipe_Heat21.heatport_a.Q_flow
+pipeC1.Pipe_Heat21.length
+pipeC1.Pipe_Heat21.diameter
+pipeC1.Pipe_Heat21.crossArea
+pipeC1.Pipe_Heat21.perimeter
+pipeC1.Pipe_Heat21.roughness
+pipeC1.Pipe_Heat21.k_m
+pipeC1.Pipe_Heat21.V
+pipeC1.Pipe_Heat21.height_ab
+pipeC1.Pipe_Heat21.T_start
+pipeC1.Pipe_Heat21.U_start
+pipeC1.Pipe_Heat21.f
+pipeC1.Pipe_Heat21.h_f
+pipeC1.Pipe_Heat21.h_m
+pipeC1.Pipe_Heat21.dp
+pipeC1.Pipe_Heat21.V_flow
+pipeC1.Pipe_Heat21.der(V_flow)
+pipeC1.Pipe_Heat21.T
+pipeC1.Pipe_Heat21.der(T)
+pipeC1.Pipe_Heat11.heatport_a.T
+pipeC1.Pipe_Heat11.heatport_a.Q_flow
+pipeC1.Pipe_Heat11.length
+pipeC1.Pipe_Heat11.diameter
+pipeC1.Pipe_Heat11.crossArea
+pipeC1.Pipe_Heat11.perimeter
+pipeC1.Pipe_Heat11.roughness
+pipeC1.Pipe_Heat11.k_m
+pipeC1.Pipe_Heat11.V
+pipeC1.Pipe_Heat11.height_ab
+pipeC1.Pipe_Heat11.T_start
+pipeC1.Pipe_Heat11.U_start
+pipeC1.Pipe_Heat11.f
+pipeC1.Pipe_Heat11.h_f
+pipeC1.Pipe_Heat11.h_m
+pipeC1.Pipe_Heat11.dp
+pipeC1.Pipe_Heat11.V_flow
+pipeC1.Pipe_Heat11.der(V_flow)
+pipeC1.Pipe_Heat11.T
+pipeC1.Pipe_Heat11.der(T)
+pipeC1.fixedHeatFlow1.Q_flow
+pipeC1.fixedHeatFlow1.T_ref
+pipeC1.fixedHeatFlow1.alpha
+pipeC1.fixedHeatFlow2.Q_flow
+pipeC1.fixedHeatFlow2.T_ref
+pipeC1.fixedHeatFlow2.alpha
+pipeC1.port_a1.p
+pipeC1.port_a1.m_flow
+pipeC1.port_a1.der(m_flow)
+pipeC1.port_a1.h_outflow
+pipeC1.port_a2.p
+pipeC1.port_a2.h_outflow
+PipeA_L
+PipeC_L
+PipeA_D
+PipeC_D
+dp_pumping_station
+dp_consumer1
+dp_consumer2
+dp_consumer3
+h_consumer1
+h_consumer2
+h_consumer3
+q_consumer1
+q_consumer2
+q_consumer3
+q_pumping
+dp_pumping_station2
+dp_consumer21
+dp_consumer22
+dp_consumer23
+h_consumer21
+h_consumer22
+h_consumer23
+q_consumer21
+q_consumer22
+q_consumer23
+q_pumping2
+sink_pT.p
+sink_pT.T
+sink_pT.port_a.h_outflow
+sink_pT1.p
+sink_pT1.T
+sink_pT1.port_a.h_outflow
+pipeA1.D
+pipeA1.L
+pipeA1.Pipe_Heat21.heatport_a.T
+pipeA1.Pipe_Heat21.heatport_a.Q_flow
+pipeA1.Pipe_Heat21.length
+pipeA1.Pipe_Heat21.diameter
+pipeA1.Pipe_Heat21.crossArea
+pipeA1.Pipe_Heat21.perimeter
+pipeA1.Pipe_Heat21.roughness
+pipeA1.Pipe_Heat21.k_m
+pipeA1.Pipe_Heat21.V
+pipeA1.Pipe_Heat21.height_ab
+pipeA1.Pipe_Heat21.T_start
+pipeA1.Pipe_Heat21.U_start
+pipeA1.Pipe_Heat21.f
+pipeA1.Pipe_Heat21.h_f
+pipeA1.Pipe_Heat21.h_m
+pipeA1.Pipe_Heat21.dp
+pipeA1.Pipe_Heat21.V_flow
+pipeA1.Pipe_Heat21.der(V_flow)
+pipeA1.Pipe_Heat21.T
+pipeA1.Pipe_Heat21.der(T)
+pipeA1.Pipe_Heat11.heatport_a.T
+pipeA1.Pipe_Heat11.heatport_a.Q_flow
+pipeA1.Pipe_Heat11.length
+pipeA1.Pipe_Heat11.diameter
+pipeA1.Pipe_Heat11.crossArea
+pipeA1.Pipe_Heat11.perimeter
+pipeA1.Pipe_Heat11.roughness
+pipeA1.Pipe_Heat11.k_m
+pipeA1.Pipe_Heat11.V
+pipeA1.Pipe_Heat11.height_ab
+pipeA1.Pipe_Heat11.T_start
+pipeA1.Pipe_Heat11.U_start
+pipeA1.Pipe_Heat11.f
+pipeA1.Pipe_Heat11.h_f
+pipeA1.Pipe_Heat11.h_m
+pipeA1.Pipe_Heat11.dp
+pipeA1.Pipe_Heat11.V_flow
+pipeA1.Pipe_Heat11.der(V_flow)
+pipeA1.Pipe_Heat11.T
+pipeA1.Pipe_Heat11.der(T)
+pipeA1.fixedHeatFlow1.Q_flow
+pipeA1.fixedHeatFlow1.T_ref
+pipeA1.fixedHeatFlow1.alpha
+pipeA1.fixedHeatFlow2.Q_flow
+pipeA1.fixedHeatFlow2.T_ref
+pipeA1.fixedHeatFlow2.alpha
+pipeA1.port_a1.h_outflow
+pipeA1.port_a2.p
+pipeA1.port_a2.h_outflow
+pipeC2.D
+pipeC2.L
+pipeC2.Pipe_Heat21.heatport_a.T
+pipeC2.Pipe_Heat21.heatport_a.Q_flow
+pipeC2.Pipe_Heat21.length
+pipeC2.Pipe_Heat21.diameter
+pipeC2.Pipe_Heat21.crossArea
+pipeC2.Pipe_Heat21.perimeter
+pipeC2.Pipe_Heat21.roughness
+pipeC2.Pipe_Heat21.k_m
+pipeC2.Pipe_Heat21.V
+pipeC2.Pipe_Heat21.height_ab
+pipeC2.Pipe_Heat21.T_start
+pipeC2.Pipe_Heat21.U_start
+pipeC2.Pipe_Heat21.f
+pipeC2.Pipe_Heat21.h_f
+pipeC2.Pipe_Heat21.h_m
+pipeC2.Pipe_Heat21.dp
+pipeC2.Pipe_Heat21.V_flow
+pipeC2.Pipe_Heat21.der(V_flow)
+pipeC2.Pipe_Heat21.T
+pipeC2.Pipe_Heat21.der(T)
+pipeC2.Pipe_Heat11.heatport_a.T
+pipeC2.Pipe_Heat11.heatport_a.Q_flow
+pipeC2.Pipe_Heat11.length
+pipeC2.Pipe_Heat11.diameter
+pipeC2.Pipe_Heat11.crossArea
+pipeC2.Pipe_Heat11.perimeter
+pipeC2.Pipe_Heat11.roughness
+pipeC2.Pipe_Heat11.k_m
+pipeC2.Pipe_Heat11.V
+pipeC2.Pipe_Heat11.height_ab
+pipeC2.Pipe_Heat11.T_start
+pipeC2.Pipe_Heat11.U_start
+pipeC2.Pipe_Heat11.f
+pipeC2.Pipe_Heat11.h_f
+pipeC2.Pipe_Heat11.h_m
+pipeC2.Pipe_Heat11.dp
+pipeC2.Pipe_Heat11.V_flow
+pipeC2.Pipe_Heat11.der(V_flow)
+pipeC2.Pipe_Heat11.T
+pipeC2.Pipe_Heat11.der(T)
+pipeC2.fixedHeatFlow1.Q_flow
+pipeC2.fixedHeatFlow1.T_ref
+pipeC2.fixedHeatFlow1.alpha
+pipeC2.fixedHeatFlow2.Q_flow
+pipeC2.fixedHeatFlow2.T_ref
+pipeC2.fixedHeatFlow2.alpha
+pipeC2.port_a1.p
+pipeC2.port_a1.m_flow
+pipeC2.port_a1.der(m_flow)
+pipeC2.port_a1.h_outflow
+pipeC2.port_a2.p
+pipeC2.port_a2.h_outflow
+consumer_Water3.h
+consumer_Water3.port_a1.p
+consumer_Water3.port_a1.m_flow
+consumer_Water3.port_a1.h_outflow
+consumer_Water3.port_a2.m_flow
+consumer_Water3.port_a2.h_outflow
+consumer_Water3.port_b.m_flow
+consumer_Water3.port_b.h_outflow
+consumer_Water3.h_tank.k
+consumer_Water3.tank_PAir.diameter
+consumer_Water3.tank_PAir.fluidLevel_max
+consumer_Water3.tank_PAir.fluidLevel_min
+consumer_Water3.tank_PAir.crossArea
+consumer_Water3.tank_PAir.volume
+consumer_Water3.tank_PAir.perimeter
+consumer_Water3.tank_PAir.fluidLevel_nom
+consumer_Water3.tank_PAir.E
+consumer_Water3.tank_PAir.der(E)
+consumer_Water3.tank_PAir.fluidLevel
+consumer_Water3.tank_PAir.der(fluidLevel)
+consumer_Water3.tank_PAir.dp
+consumer_Water3.tank_PAir.p0_tank
+consumer_Water3.tank_PAir.port_a1.h_outflow
+consumer_Water3.tank_PAir.port_a3.h_outflow
+consumer_Water3.tank_PAir.port_b.p
+consumer_Water3.tank_PAir.port_b.h_outflow
+consumer_Water3.valve_In1.kv
+consumer_Water3.valve_In1.OD_min
+consumer_Water3.valve_In1.kvs
+consumer_Water3.valve_In1.OD_valve
+consumer_Water3.valve_In1.dp
+consumer_Water3.valve_In2.kv
+consumer_Water3.valve_In2.OD_min
+consumer_Water3.valve_In2.kvs
+consumer_Water3.valve_In2.OD_valve
+consumer_Water3.valve_In2.dp
+consumer_Water3.valve.kv
+consumer_Water3.valve.OD_min
+consumer_Water3.valve.kvs
+consumer_Water3.valve.OD_valve
+consumer_Water3.valve.dp
+OD_in6.k
+OD_in7.k
+OD_out4.k
+sink_pT2.p
+sink_pT2.T
+sink_pT2.port_a.h_outflow
+pipeC3.D
+pipeC3.L
+pipeC3.Pipe_Heat21.heatport_a.T
+pipeC3.Pipe_Heat21.heatport_a.Q_flow
+pipeC3.Pipe_Heat21.length
+pipeC3.Pipe_Heat21.diameter
+pipeC3.Pipe_Heat21.crossArea
+pipeC3.Pipe_Heat21.perimeter
+pipeC3.Pipe_Heat21.roughness
+pipeC3.Pipe_Heat21.k_m
+pipeC3.Pipe_Heat21.V
+pipeC3.Pipe_Heat21.height_ab
+pipeC3.Pipe_Heat21.T_start
+pipeC3.Pipe_Heat21.U_start
+pipeC3.Pipe_Heat21.f
+pipeC3.Pipe_Heat21.h_f
+pipeC3.Pipe_Heat21.h_m
+pipeC3.Pipe_Heat21.dp
+pipeC3.Pipe_Heat21.V_flow
+pipeC3.Pipe_Heat21.der(V_flow)
+pipeC3.Pipe_Heat21.T
+pipeC3.Pipe_Heat21.der(T)
+pipeC3.Pipe_Heat11.heatport_a.T
+pipeC3.Pipe_Heat11.heatport_a.Q_flow
+pipeC3.Pipe_Heat11.length
+pipeC3.Pipe_Heat11.diameter
+pipeC3.Pipe_Heat11.crossArea
+pipeC3.Pipe_Heat11.perimeter
+pipeC3.Pipe_Heat11.roughness
+pipeC3.Pipe_Heat11.k_m
+pipeC3.Pipe_Heat11.V
+pipeC3.Pipe_Heat11.height_ab
+pipeC3.Pipe_Heat11.T_start
+pipeC3.Pipe_Heat11.U_start
+pipeC3.Pipe_Heat11.f
+pipeC3.Pipe_Heat11.h_f
+pipeC3.Pipe_Heat11.h_m
+pipeC3.Pipe_Heat11.dp
+pipeC3.Pipe_Heat11.V_flow
+pipeC3.Pipe_Heat11.der(V_flow)
+pipeC3.Pipe_Heat11.T
+pipeC3.Pipe_Heat11.der(T)
+pipeC3.fixedHeatFlow1.Q_flow
+pipeC3.fixedHeatFlow1.T_ref
+pipeC3.fixedHeatFlow1.alpha
+pipeC3.fixedHeatFlow2.Q_flow
+pipeC3.fixedHeatFlow2.T_ref
+pipeC3.fixedHeatFlow2.alpha
+pipeC3.port_a1.p
+pipeC3.port_a1.m_flow
+pipeC3.port_a1.der(m_flow)
+pipeC3.port_a1.h_outflow
+pipeC3.port_a2.p
+pipeC3.port_a2.h_outflow
+pipeA2.D
+pipeA2.L
+pipeA2.Pipe_Heat21.heatport_a.T
+pipeA2.Pipe_Heat21.heatport_a.Q_flow
+pipeA2.Pipe_Heat21.length
+pipeA2.Pipe_Heat21.diameter
+pipeA2.Pipe_Heat21.crossArea
+pipeA2.Pipe_Heat21.perimeter
+pipeA2.Pipe_Heat21.roughness
+pipeA2.Pipe_Heat21.k_m
+pipeA2.Pipe_Heat21.V
+pipeA2.Pipe_Heat21.height_ab
+pipeA2.Pipe_Heat21.T_start
+pipeA2.Pipe_Heat21.U_start
+pipeA2.Pipe_Heat21.f
+pipeA2.Pipe_Heat21.h_f
+pipeA2.Pipe_Heat21.h_m
+pipeA2.Pipe_Heat21.dp
+pipeA2.Pipe_Heat21.V_flow
+pipeA2.Pipe_Heat21.der(V_flow)
+pipeA2.Pipe_Heat21.T
+pipeA2.Pipe_Heat21.der(T)
+pipeA2.Pipe_Heat11.heatport_a.T
+pipeA2.Pipe_Heat11.heatport_a.Q_flow
+pipeA2.Pipe_Heat11.length
+pipeA2.Pipe_Heat11.diameter
+pipeA2.Pipe_Heat11.crossArea
+pipeA2.Pipe_Heat11.perimeter
+pipeA2.Pipe_Heat11.roughness
+pipeA2.Pipe_Heat11.k_m
+pipeA2.Pipe_Heat11.V
+pipeA2.Pipe_Heat11.height_ab
+pipeA2.Pipe_Heat11.T_start
+pipeA2.Pipe_Heat11.U_start
+pipeA2.Pipe_Heat11.f
+pipeA2.Pipe_Heat11.h_f
+pipeA2.Pipe_Heat11.h_m
+pipeA2.Pipe_Heat11.dp
+pipeA2.Pipe_Heat11.V_flow
+pipeA2.Pipe_Heat11.der(V_flow)
+pipeA2.Pipe_Heat11.T
+pipeA2.Pipe_Heat11.der(T)
+pipeA2.fixedHeatFlow1.Q_flow
+pipeA2.fixedHeatFlow1.T_ref
+pipeA2.fixedHeatFlow1.alpha
+pipeA2.fixedHeatFlow2.Q_flow
+pipeA2.fixedHeatFlow2.T_ref
+pipeA2.fixedHeatFlow2.alpha
+pipeA2.port_a1.m_flow
+pipeA2.port_a1.der(m_flow)
+pipeA2.port_a1.h_outflow
+pipeA2.port_a2.h_outflow
+source_qT1.m_flow
+source_qT1.T
+source_qT1.port_b.p
+source_qT1.port_b.h_outflow
+pumping2.Tank.diameter
+pumping2.Tank.fluidLevel_max
+pumping2.Tank.fluidLevel_min
+pumping2.Tank.crossArea
+pumping2.Tank.perimeter
+pumping2.Tank.fluidLevel_nom
+pumping2.Tank.E
+pumping2.Tank.der(E)
+pumping2.Tank.fluidLevel
+pumping2.Tank.der(fluidLevel)
+pumping2.Tank.dp
+pumping2.Tank.port_a.p
+pumping2.Tank.port_a.h_outflow
+pumping2.Tank.port_b.p
+pumping2.Tank.port_b.m_flow
+pumping2.Tank.port_b.h_outflow
+pumping2.port_a.h_outflow
+pumping2.port_b.p
+pumping2.port_b.m_flow
+pumping2.port_b.der(m_flow)
+pumping2.port_b.h_outflow
+pumping2.basicPump.port_a.m_flow
+pumping2.basicPump.port_a.h_outflow
+pumping2.basicPump.port_b.p
+pumping2.basicPump.ah_2
+pumping2.basicPump.ah_1
+pumping2.basicPump.ah_0
+pumping2.basicPump.V_flow_min
+pumping2.basicPump.h_p
+pumping2.basicPump.dp
+pumping2.basicPump.V_flow
+pumping2.basicPump1.port_a.m_flow
+pumping2.basicPump1.port_a.h_outflow
+pumping2.basicPump1.ah_2
+pumping2.basicPump1.ah_1
+pumping2.basicPump1.ah_0
+pumping2.basicPump1.V_flow_min
+pumping2.basicPump1.h_p
+pumping2.basicPump1.dp
+pumping2.basicPump1.V_flow
+pumping2.OD_out8.k
+pumping2.OD_Outlet2
+pumping2.valve_Out3.kv
+pumping2.valve_Out3.OD_min
+pumping2.valve_Out3.kvs
+pumping2.valve_Out3.OD_valve
+pumping2.valve_Out3.dp
+pumping2.valve_Out2.port_a.m_flow
+pumping2.valve_Out2.port_a.h_outflow
+pumping2.valve_Out2.kv
+pumping2.valve_Out2.OD_min
+pumping2.valve_Out2.kvs
+pumping2.valve_Out2.OD_valve
+pumping2.valve_Out2.dp
+pumping2.valve_In1.port_b.p
+pumping2.valve_In1.kv
+pumping2.valve_In1.OD_min
+pumping2.valve_In1.kvs
+pumping2.valve_In1.OD_valve
+pumping2.valve_In1.dp
+OD_in8.k
+OD_out5.k
+PWM_out2.k
+consumer_Water21.h
+consumer_Water21.port_a1.p
+consumer_Water21.port_a1.m_flow
+consumer_Water21.port_a1.h_outflow
+consumer_Water21.port_a2.m_flow
+consumer_Water21.port_a2.h_outflow
+consumer_Water21.port_b.m_flow
+consumer_Water21.port_b.h_outflow
+consumer_Water21.h_tank.k
+consumer_Water21.tank_PAir.diameter
+consumer_Water21.tank_PAir.fluidLevel_max
+consumer_Water21.tank_PAir.fluidLevel_min
+consumer_Water21.tank_PAir.crossArea
+consumer_Water21.tank_PAir.volume
+consumer_Water21.tank_PAir.perimeter
+consumer_Water21.tank_PAir.fluidLevel_nom
+consumer_Water21.tank_PAir.E
+consumer_Water21.tank_PAir.der(E)
+consumer_Water21.tank_PAir.fluidLevel
+consumer_Water21.tank_PAir.der(fluidLevel)
+consumer_Water21.tank_PAir.dp
+consumer_Water21.tank_PAir.p0_tank
+consumer_Water21.tank_PAir.port_a1.h_outflow
+consumer_Water21.tank_PAir.port_a3.h_outflow
+consumer_Water21.tank_PAir.port_b.p
+consumer_Water21.tank_PAir.port_b.h_outflow
+consumer_Water21.valve_In1.kv
+consumer_Water21.valve_In1.OD_min
+consumer_Water21.valve_In1.kvs
+consumer_Water21.valve_In1.OD_valve
+consumer_Water21.valve_In1.dp
+consumer_Water21.valve_In2.kv
+consumer_Water21.valve_In2.OD_min
+consumer_Water21.valve_In2.kvs
+consumer_Water21.valve_In2.OD_valve
+consumer_Water21.valve_In2.dp
+consumer_Water21.valve.kv
+consumer_Water21.valve.OD_min
+consumer_Water21.valve.kvs
+consumer_Water21.valve.OD_valve
+consumer_Water21.valve.dp
+OD_in9.k
+OD_in10.k
+OD_out6.k
+consumer_Water22.h
+consumer_Water22.port_a1.p
+consumer_Water22.port_a1.m_flow
+consumer_Water22.port_a1.h_outflow
+consumer_Water22.port_a2.m_flow
+consumer_Water22.port_a2.h_outflow
+consumer_Water22.port_b.m_flow
+consumer_Water22.port_b.h_outflow
+consumer_Water22.h_tank.k
+consumer_Water22.tank_PAir.diameter
+consumer_Water22.tank_PAir.fluidLevel_max
+consumer_Water22.tank_PAir.fluidLevel_min
+consumer_Water22.tank_PAir.crossArea
+consumer_Water22.tank_PAir.volume
+consumer_Water22.tank_PAir.perimeter
+consumer_Water22.tank_PAir.fluidLevel_nom
+consumer_Water22.tank_PAir.E
+consumer_Water22.tank_PAir.der(E)
+consumer_Water22.tank_PAir.fluidLevel
+consumer_Water22.tank_PAir.der(fluidLevel)
+consumer_Water22.tank_PAir.dp
+consumer_Water22.tank_PAir.p0_tank
+consumer_Water22.tank_PAir.port_a1.h_outflow
+consumer_Water22.tank_PAir.port_a3.h_outflow
+consumer_Water22.tank_PAir.port_b.p
+consumer_Water22.tank_PAir.port_b.h_outflow
+consumer_Water22.valve_In1.kv
+consumer_Water22.valve_In1.OD_min
+consumer_Water22.valve_In1.kvs
+consumer_Water22.valve_In1.OD_valve
+consumer_Water22.valve_In1.dp
+consumer_Water22.valve_In2.kv
+consumer_Water22.valve_In2.OD_min
+consumer_Water22.valve_In2.kvs
+consumer_Water22.valve_In2.OD_valve
+consumer_Water22.valve_In2.dp
+consumer_Water22.valve.kv
+consumer_Water22.valve.OD_min
+consumer_Water22.valve.kvs
+consumer_Water22.valve.OD_valve
+consumer_Water22.valve.dp
+OD_in11.k
+OD_in12.k
+OD_out7.k
+sink_pT3.p
+sink_pT3.T
+sink_pT3.port_a.h_outflow
+sink_pT4.p
+sink_pT4.T
+sink_pT4.port_a.h_outflow
+consumer_Water23.h
+consumer_Water23.port_a1.p
+consumer_Water23.port_a1.m_flow
+consumer_Water23.port_a1.h_outflow
+consumer_Water23.port_a2.m_flow
+consumer_Water23.port_a2.h_outflow
+consumer_Water23.port_b.m_flow
+consumer_Water23.port_b.h_outflow
+consumer_Water23.h_tank.k
+consumer_Water23.tank_PAir.diameter
+consumer_Water23.tank_PAir.fluidLevel_max
+consumer_Water23.tank_PAir.fluidLevel_min
+consumer_Water23.tank_PAir.crossArea
+consumer_Water23.tank_PAir.volume
+consumer_Water23.tank_PAir.perimeter
+consumer_Water23.tank_PAir.fluidLevel_nom
+consumer_Water23.tank_PAir.E
+consumer_Water23.tank_PAir.der(E)
+consumer_Water23.tank_PAir.fluidLevel
+consumer_Water23.tank_PAir.der(fluidLevel)
+consumer_Water23.tank_PAir.dp
+consumer_Water23.tank_PAir.p0_tank
+consumer_Water23.tank_PAir.port_a1.h_outflow
+consumer_Water23.tank_PAir.port_a3.h_outflow
+consumer_Water23.tank_PAir.port_b.p
+consumer_Water23.tank_PAir.port_b.h_outflow
+consumer_Water23.valve_In1.kv
+consumer_Water23.valve_In1.OD_min
+consumer_Water23.valve_In1.kvs
+consumer_Water23.valve_In1.OD_valve
+consumer_Water23.valve_In1.dp
+consumer_Water23.valve_In2.kv
+consumer_Water23.valve_In2.OD_min
+consumer_Water23.valve_In2.kvs
+consumer_Water23.valve_In2.OD_valve
+consumer_Water23.valve_In2.dp
+consumer_Water23.valve.kv
+consumer_Water23.valve.OD_min
+consumer_Water23.valve.kvs
+consumer_Water23.valve.OD_valve
+consumer_Water23.valve.dp
+OD_in13.k
+OD_in14.k
+OD_out8.k
+sink_pT5.p
+sink_pT5.T
+sink_pT5.port_a.h_outflow
+pipeC21.D
+pipeC21.L
+pipeC21.n1
+pipeC21.n2
+pipeC21.Pipe_Heat21.port_b.p
+pipeC21.Pipe_Heat21.heatport_a.T
+pipeC21.Pipe_Heat21.heatport_a.Q_flow
+pipeC21.Pipe_Heat21.length
+pipeC21.Pipe_Heat21.diameter
+pipeC21.Pipe_Heat21.crossArea
+pipeC21.Pipe_Heat21.perimeter
+pipeC21.Pipe_Heat21.roughness
+pipeC21.Pipe_Heat21.k_m
+pipeC21.Pipe_Heat21.V
+pipeC21.Pipe_Heat21.height_ab
+pipeC21.Pipe_Heat21.T_start
+pipeC21.Pipe_Heat21.U_start
+pipeC21.Pipe_Heat21.f
+pipeC21.Pipe_Heat21.h_f
+pipeC21.Pipe_Heat21.h_m
+pipeC21.Pipe_Heat21.dp
+pipeC21.Pipe_Heat21.V_flow
+pipeC21.Pipe_Heat21.der(V_flow)
+pipeC21.Pipe_Heat21.T
+pipeC21.Pipe_Heat21.der(T)
+pipeC21.Pipe_Heat11.port_b.p
+pipeC21.Pipe_Heat11.heatport_a.T
+pipeC21.Pipe_Heat11.heatport_a.Q_flow
+pipeC21.Pipe_Heat11.length
+pipeC21.Pipe_Heat11.diameter
+pipeC21.Pipe_Heat11.crossArea
+pipeC21.Pipe_Heat11.perimeter
+pipeC21.Pipe_Heat11.roughness
+pipeC21.Pipe_Heat11.k_m
+pipeC21.Pipe_Heat11.V
+pipeC21.Pipe_Heat11.height_ab
+pipeC21.Pipe_Heat11.T_start
+pipeC21.Pipe_Heat11.U_start
+pipeC21.Pipe_Heat11.f
+pipeC21.Pipe_Heat11.h_f
+pipeC21.Pipe_Heat11.h_m
+pipeC21.Pipe_Heat11.dp
+pipeC21.Pipe_Heat11.V_flow
+pipeC21.Pipe_Heat11.der(V_flow)
+pipeC21.Pipe_Heat11.T
+pipeC21.Pipe_Heat11.der(T)
+pipeC21.fixedHeatFlow1.Q_flow
+pipeC21.fixedHeatFlow1.T_ref
+pipeC21.fixedHeatFlow1.alpha
+pipeC21.fixedHeatFlow2.Q_flow
+pipeC21.fixedHeatFlow2.T_ref
+pipeC21.fixedHeatFlow2.alpha
+pipeC21.port_a1.p
+pipeC21.port_a1.m_flow
+pipeC21.port_a1.der(m_flow)
+pipeC21.port_a1.h_outflow
+pipeC21.port_a2.p
+pipeC21.port_a2.h_outflow
+pipeC21.port_b1.h_outflow
+pipeC21.port_b2.h_outflow
+pipeC21.Sel_Valve1.OD_nominal
+pipeC21.Sel_Valve1.dp_nominal
+pipeC21.Sel_Valve1.m_flow_nominal
+pipeC21.Sel_Valve1.opening_min
+pipeC21.Sel_Valve1.k
+pipeC21.Sel_Valve1.dp
+pipeC21.Sel_Valve1.OD_valve
+pipeC21.OD_Select1.k
+pipeC21.Sel_Valve2.OD_nominal
+pipeC21.Sel_Valve2.dp_nominal
+pipeC21.Sel_Valve2.m_flow_nominal
+pipeC21.Sel_Valve2.opening_min
+pipeC21.Sel_Valve2.k
+pipeC21.Sel_Valve2.dp
+pipeC21.Sel_Valve2.OD_valve
+pipeC21.OD_Select2.k
+pipeC22.D
+pipeC22.L
+pipeC22.n1
+pipeC22.n2
+pipeC22.Pipe_Heat21.port_b.p
+pipeC22.Pipe_Heat21.heatport_a.T
+pipeC22.Pipe_Heat21.heatport_a.Q_flow
+pipeC22.Pipe_Heat21.length
+pipeC22.Pipe_Heat21.diameter
+pipeC22.Pipe_Heat21.crossArea
+pipeC22.Pipe_Heat21.perimeter
+pipeC22.Pipe_Heat21.roughness
+pipeC22.Pipe_Heat21.k_m
+pipeC22.Pipe_Heat21.V
+pipeC22.Pipe_Heat21.height_ab
+pipeC22.Pipe_Heat21.T_start
+pipeC22.Pipe_Heat21.U_start
+pipeC22.Pipe_Heat21.f
+pipeC22.Pipe_Heat21.h_f
+pipeC22.Pipe_Heat21.h_m
+pipeC22.Pipe_Heat21.dp
+pipeC22.Pipe_Heat21.V_flow
+pipeC22.Pipe_Heat21.der(V_flow)
+pipeC22.Pipe_Heat21.T
+pipeC22.Pipe_Heat21.der(T)
+pipeC22.Pipe_Heat11.port_b.p
+pipeC22.Pipe_Heat11.heatport_a.T
+pipeC22.Pipe_Heat11.heatport_a.Q_flow
+pipeC22.Pipe_Heat11.length
+pipeC22.Pipe_Heat11.diameter
+pipeC22.Pipe_Heat11.crossArea
+pipeC22.Pipe_Heat11.perimeter
+pipeC22.Pipe_Heat11.roughness
+pipeC22.Pipe_Heat11.k_m
+pipeC22.Pipe_Heat11.V
+pipeC22.Pipe_Heat11.height_ab
+pipeC22.Pipe_Heat11.T_start
+pipeC22.Pipe_Heat11.U_start
+pipeC22.Pipe_Heat11.f
+pipeC22.Pipe_Heat11.h_f
+pipeC22.Pipe_Heat11.h_m
+pipeC22.Pipe_Heat11.dp
+pipeC22.Pipe_Heat11.V_flow
+pipeC22.Pipe_Heat11.der(V_flow)
+pipeC22.Pipe_Heat11.T
+pipeC22.Pipe_Heat11.der(T)
+pipeC22.fixedHeatFlow1.Q_flow
+pipeC22.fixedHeatFlow1.T_ref
+pipeC22.fixedHeatFlow1.alpha
+pipeC22.fixedHeatFlow2.Q_flow
+pipeC22.fixedHeatFlow2.T_ref
+pipeC22.fixedHeatFlow2.alpha
+pipeC22.port_a1.p
+pipeC22.port_a1.m_flow
+pipeC22.port_a1.der(m_flow)
+pipeC22.port_a1.h_outflow
+pipeC22.port_a2.p
+pipeC22.port_a2.h_outflow
+pipeC22.port_b1.h_outflow
+pipeC22.port_b2.h_outflow
+pipeC22.Sel_Valve1.OD_nominal
+pipeC22.Sel_Valve1.dp_nominal
+pipeC22.Sel_Valve1.m_flow_nominal
+pipeC22.Sel_Valve1.opening_min
+pipeC22.Sel_Valve1.k
+pipeC22.Sel_Valve1.dp
+pipeC22.Sel_Valve1.OD_valve
+pipeC22.OD_Select1.k
+pipeC22.Sel_Valve2.OD_nominal
+pipeC22.Sel_Valve2.dp_nominal
+pipeC22.Sel_Valve2.m_flow_nominal
+pipeC22.Sel_Valve2.opening_min
+pipeC22.Sel_Valve2.k
+pipeC22.Sel_Valve2.dp
+pipeC22.Sel_Valve2.OD_valve
+pipeC22.OD_Select2.k
+pipeA21.D
+pipeA21.L
+pipeA21.n1
+pipeA21.n2
+pipeA21.Pipe_Heat21.port_b.p
+pipeA21.Pipe_Heat21.heatport_a.T
+pipeA21.Pipe_Heat21.heatport_a.Q_flow
+pipeA21.Pipe_Heat21.length
+pipeA21.Pipe_Heat21.diameter
+pipeA21.Pipe_Heat21.crossArea
+pipeA21.Pipe_Heat21.perimeter
+pipeA21.Pipe_Heat21.roughness
+pipeA21.Pipe_Heat21.k_m
+pipeA21.Pipe_Heat21.V
+pipeA21.Pipe_Heat21.height_ab
+pipeA21.Pipe_Heat21.T_start
+pipeA21.Pipe_Heat21.U_start
+pipeA21.Pipe_Heat21.f
+pipeA21.Pipe_Heat21.h_f
+pipeA21.Pipe_Heat21.h_m
+pipeA21.Pipe_Heat21.dp
+pipeA21.Pipe_Heat21.V_flow
+pipeA21.Pipe_Heat21.der(V_flow)
+pipeA21.Pipe_Heat21.T
+pipeA21.Pipe_Heat21.der(T)
+pipeA21.Pipe_Heat11.port_b.p
+pipeA21.Pipe_Heat11.heatport_a.T
+pipeA21.Pipe_Heat11.heatport_a.Q_flow
+pipeA21.Pipe_Heat11.length
+pipeA21.Pipe_Heat11.diameter
+pipeA21.Pipe_Heat11.crossArea
+pipeA21.Pipe_Heat11.perimeter
+pipeA21.Pipe_Heat11.roughness
+pipeA21.Pipe_Heat11.k_m
+pipeA21.Pipe_Heat11.V
+pipeA21.Pipe_Heat11.height_ab
+pipeA21.Pipe_Heat11.T_start
+pipeA21.Pipe_Heat11.U_start
+pipeA21.Pipe_Heat11.f
+pipeA21.Pipe_Heat11.h_f
+pipeA21.Pipe_Heat11.h_m
+pipeA21.Pipe_Heat11.dp
+pipeA21.Pipe_Heat11.V_flow
+pipeA21.Pipe_Heat11.der(V_flow)
+pipeA21.Pipe_Heat11.T
+pipeA21.Pipe_Heat11.der(T)
+pipeA21.fixedHeatFlow1.Q_flow
+pipeA21.fixedHeatFlow1.T_ref
+pipeA21.fixedHeatFlow1.alpha
+pipeA21.fixedHeatFlow2.Q_flow
+pipeA21.fixedHeatFlow2.T_ref
+pipeA21.fixedHeatFlow2.alpha
+pipeA21.port_a1.h_outflow
+pipeA21.port_a2.p
+pipeA21.port_a2.h_outflow
+pipeA21.port_b1.h_outflow
+pipeA21.port_b2.h_outflow
+pipeA21.Sel_Valve1.OD_nominal
+pipeA21.Sel_Valve1.dp_nominal
+pipeA21.Sel_Valve1.m_flow_nominal
+pipeA21.Sel_Valve1.opening_min
+pipeA21.Sel_Valve1.k
+pipeA21.Sel_Valve1.dp
+pipeA21.Sel_Valve1.OD_valve
+pipeA21.OD_Select1.k
+pipeA21.Sel_Valve2.OD_nominal
+pipeA21.Sel_Valve2.dp_nominal
+pipeA21.Sel_Valve2.m_flow_nominal
+pipeA21.Sel_Valve2.opening_min
+pipeA21.Sel_Valve2.k
+pipeA21.Sel_Valve2.dp
+pipeA21.Sel_Valve2.OD_valve
+pipeA21.OD_Select2.k
+pipeA22.D
+pipeA22.L
+pipeA22.n1
+pipeA22.n2
+pipeA22.Pipe_Heat21.port_b.p
+pipeA22.Pipe_Heat21.heatport_a.T
+pipeA22.Pipe_Heat21.heatport_a.Q_flow
+pipeA22.Pipe_Heat21.length
+pipeA22.Pipe_Heat21.diameter
+pipeA22.Pipe_Heat21.crossArea
+pipeA22.Pipe_Heat21.perimeter
+pipeA22.Pipe_Heat21.roughness
+pipeA22.Pipe_Heat21.k_m
+pipeA22.Pipe_Heat21.V
+pipeA22.Pipe_Heat21.height_ab
+pipeA22.Pipe_Heat21.T_start
+pipeA22.Pipe_Heat21.U_start
+pipeA22.Pipe_Heat21.f
+pipeA22.Pipe_Heat21.h_f
+pipeA22.Pipe_Heat21.h_m
+pipeA22.Pipe_Heat21.dp
+pipeA22.Pipe_Heat21.V_flow
+pipeA22.Pipe_Heat21.der(V_flow)
+pipeA22.Pipe_Heat21.T
+pipeA22.Pipe_Heat21.der(T)
+pipeA22.Pipe_Heat11.port_b.p
+pipeA22.Pipe_Heat11.heatport_a.T
+pipeA22.Pipe_Heat11.heatport_a.Q_flow
+pipeA22.Pipe_Heat11.length
+pipeA22.Pipe_Heat11.diameter
+pipeA22.Pipe_Heat11.crossArea
+pipeA22.Pipe_Heat11.perimeter
+pipeA22.Pipe_Heat11.roughness
+pipeA22.Pipe_Heat11.k_m
+pipeA22.Pipe_Heat11.V
+pipeA22.Pipe_Heat11.height_ab
+pipeA22.Pipe_Heat11.T_start
+pipeA22.Pipe_Heat11.U_start
+pipeA22.Pipe_Heat11.f
+pipeA22.Pipe_Heat11.h_f
+pipeA22.Pipe_Heat11.h_m
+pipeA22.Pipe_Heat11.dp
+pipeA22.Pipe_Heat11.V_flow
+pipeA22.Pipe_Heat11.der(V_flow)
+pipeA22.Pipe_Heat11.T
+pipeA22.Pipe_Heat11.der(T)
+pipeA22.fixedHeatFlow1.Q_flow
+pipeA22.fixedHeatFlow1.T_ref
+pipeA22.fixedHeatFlow1.alpha
+pipeA22.fixedHeatFlow2.Q_flow
+pipeA22.fixedHeatFlow2.T_ref
+pipeA22.fixedHeatFlow2.alpha
+pipeA22.port_a1.m_flow
+pipeA22.port_a1.der(m_flow)
+pipeA22.port_a1.h_outflow
+pipeA22.port_a2.m_flow
+pipeA22.port_a2.der(m_flow)
+pipeA22.port_a2.h_outflow
+pipeA22.port_b1.h_outflow
+pipeA22.port_b2.p
+pipeA22.port_b2.h_outflow
+pipeA22.Sel_Valve1.OD_nominal
+pipeA22.Sel_Valve1.dp_nominal
+pipeA22.Sel_Valve1.m_flow_nominal
+pipeA22.Sel_Valve1.opening_min
+pipeA22.Sel_Valve1.k
+pipeA22.Sel_Valve1.dp
+pipeA22.Sel_Valve1.OD_valve
+pipeA22.OD_Select1.k
+pipeA22.Sel_Valve2.OD_nominal
+pipeA22.Sel_Valve2.dp_nominal
+pipeA22.Sel_Valve2.m_flow_nominal
+pipeA22.Sel_Valve2.opening_min
+pipeA22.Sel_Valve2.k
+pipeA22.Sel_Valve2.dp
+pipeA22.Sel_Valve2.OD_valve
+pipeA22.OD_Select2.k
+pipeC23.D
+pipeC23.L
+pipeC23.n1
+pipeC23.n2
+pipeC23.Pipe_Heat21.port_b.p
+pipeC23.Pipe_Heat21.heatport_a.T
+pipeC23.Pipe_Heat21.heatport_a.Q_flow
+pipeC23.Pipe_Heat21.length
+pipeC23.Pipe_Heat21.diameter
+pipeC23.Pipe_Heat21.crossArea
+pipeC23.Pipe_Heat21.perimeter
+pipeC23.Pipe_Heat21.roughness
+pipeC23.Pipe_Heat21.k_m
+pipeC23.Pipe_Heat21.V
+pipeC23.Pipe_Heat21.height_ab
+pipeC23.Pipe_Heat21.T_start
+pipeC23.Pipe_Heat21.U_start
+pipeC23.Pipe_Heat21.f
+pipeC23.Pipe_Heat21.h_f
+pipeC23.Pipe_Heat21.h_m
+pipeC23.Pipe_Heat21.dp
+pipeC23.Pipe_Heat21.V_flow
+pipeC23.Pipe_Heat21.der(V_flow)
+pipeC23.Pipe_Heat21.T
+pipeC23.Pipe_Heat21.der(T)
+pipeC23.Pipe_Heat11.port_b.p
+pipeC23.Pipe_Heat11.heatport_a.T
+pipeC23.Pipe_Heat11.heatport_a.Q_flow
+pipeC23.Pipe_Heat11.length
+pipeC23.Pipe_Heat11.diameter
+pipeC23.Pipe_Heat11.crossArea
+pipeC23.Pipe_Heat11.perimeter
+pipeC23.Pipe_Heat11.roughness
+pipeC23.Pipe_Heat11.k_m
+pipeC23.Pipe_Heat11.V
+pipeC23.Pipe_Heat11.height_ab
+pipeC23.Pipe_Heat11.T_start
+pipeC23.Pipe_Heat11.U_start
+pipeC23.Pipe_Heat11.f
+pipeC23.Pipe_Heat11.h_f
+pipeC23.Pipe_Heat11.h_m
+pipeC23.Pipe_Heat11.dp
+pipeC23.Pipe_Heat11.V_flow
+pipeC23.Pipe_Heat11.der(V_flow)
+pipeC23.Pipe_Heat11.T
+pipeC23.Pipe_Heat11.der(T)
+pipeC23.fixedHeatFlow1.Q_flow
+pipeC23.fixedHeatFlow1.T_ref
+pipeC23.fixedHeatFlow1.alpha
+pipeC23.fixedHeatFlow2.Q_flow
+pipeC23.fixedHeatFlow2.T_ref
+pipeC23.fixedHeatFlow2.alpha
+pipeC23.port_a1.h_outflow
+pipeC23.port_a2.p
+pipeC23.port_a2.h_outflow
+pipeC23.port_b1.h_outflow
+pipeC23.port_b2.h_outflow
+pipeC23.Sel_Valve1.OD_nominal
+pipeC23.Sel_Valve1.dp_nominal
+pipeC23.Sel_Valve1.m_flow_nominal
+pipeC23.Sel_Valve1.opening_min
+pipeC23.Sel_Valve1.k
+pipeC23.Sel_Valve1.dp
+pipeC23.Sel_Valve1.OD_valve
+pipeC23.OD_Select1.k
+pipeC23.Sel_Valve2.OD_nominal
+pipeC23.Sel_Valve2.dp_nominal
+pipeC23.Sel_Valve2.m_flow_nominal
+pipeC23.Sel_Valve2.opening_min
+pipeC23.Sel_Valve2.k
+pipeC23.Sel_Valve2.dp
+pipeC23.Sel_Valve2.OD_valve
+pipeC23.OD_Select2.k
+
+double initialValue(1082,6)
+ -1  5.0000000000000000E-01  0       0                  1  280   # source_qT.m_flow
+ -1  2.9814999999999998E+02  0 1.0000000000000000E+100  1  280   # source_qT.T
+  0       0                  0       0                  6  260   # source_qT.port_b.p
+  0       0                  0       0                  6  260   # source_qT.port_b.h_outflow
+ -1       1                  0       0                  1  280   # pumping1.Tank.diameter
+ -1       2                  0 1.0000000000000000E+100  1  280   # pumping1.Tank.fluidLevel_max
+ -1  9.9999999999999995E-07  0 1.0000000000000000E+100  1  280   # pumping1.Tank.fluidLevel_min
+  0       0                  0       0                  6  256   # pumping1.Tank.crossArea
+  0       0                  0       0                  6  256   # pumping1.Tank.perimeter
+  0       0                  0 1.0000000000000000E+100  6  256   # pumping1.Tank.fluidLevel_nom
+  0       0                  0       0                  6  256   # pumping1.Tank.E
+  0       0                  0       0                  6  256   # pumping1.Tank.der(E)
+ -1       0                  0 1.0000000000000000E+100  2  272   # pumping1.Tank.fluidLevel
+  0       0                  0       0                  3  256   # pumping1.Tank.der(fluidLevel)
+  0       0                  0       0                  6  256   # pumping1.Tank.dp
+  0  1.0132500000000000E+05  0       0                  6  260   # pumping1.Tank.port_a.p
+  0  1.0465000000000000E+05  0       0                  6  260   # pumping1.Tank.port_a.h_outflow
+  0       0                  0       0                  6  260   # pumping1.Tank.port_b.p
+  0       0                  0       0                  6  388   # pumping1.Tank.port_b.m_flow
+  0       0                  0       0                  6  260   # pumping1.Tank.port_b.h_outflow
+  0       0                  0       0                  6  260   # pumping1.port_a.h_outflow
+  0       0                  0       0                  6  260   # pumping1.port_b.p
+  0       0                  0       0                  6  388   # pumping1.port_b.m_flow
+  0       0                  0       0                  6  260   # pumping1.port_b.der(m_flow)
+  0       0                  0       0                  6  260   # pumping1.port_b.h_outflow
+  0       0                  0       0                  6  388   # pumping1.basicPump.port_a.m_flow
+  0       0                  0       0                  6  260   # pumping1.basicPump.port_a.h_outflow
+  0       0                  0       0                  6  260   # pumping1.basicPump.port_b.p
+ -1 -1.8300000000000000E-01  0       0                  1  280   # pumping1.basicPump.ah_2
+ -1 -1.8040000000000000E-01  0       0                  1  280   # pumping1.basicPump.ah_1
+ -1  7.0579000000000001E+00  0       0                  1  280   # pumping1.basicPump.ah_0
+ -1  1.0000000000000000E-03  0       0                  1  280   # pumping1.basicPump.V_flow_min
+  0       0                  0 1.0000000000000000E+100  6  256   # pumping1.basicPump.h_p
+  0       0                  0       0                  6  256   # pumping1.basicPump.dp
+  0       0                  0       0                  6  288   # pumping1.basicPump.V_flow
+  0       0                  0       0                  6  388   # pumping1.basicPump1.port_a.m_flow
+  0       0                  0       0                  6  260   # pumping1.basicPump1.port_a.h_outflow
+ -1 -1.8300000000000000E-01  0       0                  1  280   # pumping1.basicPump1.ah_2
+ -1 -1.8040000000000000E-01  0       0                  1  280   # pumping1.basicPump1.ah_1
+ -1  7.0579000000000001E+00  0       0                  1  280   # pumping1.basicPump1.ah_0
+ -1  1.0000000000000000E-03  0       0                  1  280   # pumping1.basicPump1.V_flow_min
+  0       0                  0 1.0000000000000000E+100  6  256   # pumping1.basicPump1.h_p
+  0       0                  0       0                  6  256   # pumping1.basicPump1.dp
+  0       0                  0       0                  6  288   # pumping1.basicPump1.V_flow
+  0       1                  0       0                  6  256   # pumping1.OD_out8.k
+ -1       1                  0       0                  1  280   # pumping1.OD_Outlet2
+ -1      46                  0       0                  1  280   # pumping1.valve_Out3.kv
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # pumping1.valve_Out3.OD_min
+  0       0                  0       0                  6  256   # pumping1.valve_Out3.kvs
+  0       0                  0       0                  6  256   # pumping1.valve_Out3.OD_valve
+  0       0                  0       0                  6  288   # pumping1.valve_Out3.dp
+  0       0                  0       0                  6  388   # pumping1.valve_Out2.port_a.m_flow
+  0       0                  0       0                  6  260   # pumping1.valve_Out2.port_a.h_outflow
+ -1       1                  0       0                  1  280   # pumping1.valve_Out2.kv
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # pumping1.valve_Out2.OD_min
+  0       0                  0       0                  6  256   # pumping1.valve_Out2.kvs
+  0       0                  0       0                  6  256   # pumping1.valve_Out2.OD_valve
+  0       0                  0       0                  6  256   # pumping1.valve_Out2.dp
+  0  1.0132500000000000E+05  0       0                  6  260   # pumping1.valve_In1.port_b.p
+ -1       1                  0       0                  1  280   # pumping1.valve_In1.kv
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # pumping1.valve_In1.OD_min
+  0       0                  0       0                  6  256   # pumping1.valve_In1.kvs
+  0       0                  0       0                  6  256   # pumping1.valve_In1.OD_valve
+  0       0                  0       0                  6  288   # pumping1.valve_In1.dp
+ -1  8.0000000000000004E-01  0       0                  1  280   # OD_in1.k
+ -1       0                  0       0                  1  280   # OD_out1.k
+ -1  8.0000000000000004E-01  0       0                  1  280   # PWM_out1.k
+ -1       0                  0 1.0000000000000000E+100  1  280   # consumer_Water1.h
+  0       0                  0       0                  6  260   # consumer_Water1.port_a1.p
+  0       0                  0       0                  6  388   # consumer_Water1.port_a1.m_flow
+  0       0                  0       0                  6  260   # consumer_Water1.port_a1.h_outflow
+  0       0                  0       0                  6  388   # consumer_Water1.port_a2.m_flow
+  0       0                  0       0                  6  260   # consumer_Water1.port_a2.h_outflow
+  0       0                  0       0                  6  388   # consumer_Water1.port_b.m_flow
+  0       0                  0       0                  6  260   # consumer_Water1.port_b.h_outflow
+  0       1                  0       0                  6  256   # consumer_Water1.h_tank.k
+ -1       1                  0       0                  1  280   # consumer_Water1.tank_PAir.diameter
+ -1       2                  0 1.0000000000000000E+100  1  280   # consumer_Water1.tank_PAir.fluidLevel_max
+ -1  9.9999999999999995E-07  0 1.0000000000000000E+100  1  280   # consumer_Water1.tank_PAir.fluidLevel_min
+  0       0                  0       0                  6  256   # consumer_Water1.tank_PAir.crossArea
+  0       0                  0       0                  6  256   # consumer_Water1.tank_PAir.volume
+  0       0                  0       0                  6  256   # consumer_Water1.tank_PAir.perimeter
+  0       0                  0 1.0000000000000000E+100  6  256   # consumer_Water1.tank_PAir.fluidLevel_nom
+  0       0                  0       0                  6  256   # consumer_Water1.tank_PAir.E
+  0       0                  0       0                  6  256   # consumer_Water1.tank_PAir.der(E)
+ -1       0                  0 1.0000000000000000E+100  2  272   # consumer_Water1.tank_PAir.fluidLevel
+  0       0                  0       0                  3  256   # consumer_Water1.tank_PAir.der(fluidLevel)
+  0       0                  0       0                  6  256   # consumer_Water1.tank_PAir.dp
+  0       0                  0       0                  6  256   # consumer_Water1.tank_PAir.p0_tank
+  0  1.0465000000000000E+05  0       0                  6  260   # consumer_Water1.tank_PAir.port_a1.h_outflow
+  0  1.0465000000000000E+05  0       0                  6  260   # consumer_Water1.tank_PAir.port_a3.h_outflow
+  0       0                  0       0                  6  260   # consumer_Water1.tank_PAir.port_b.p
+  0       0                  0       0                  6  260   # consumer_Water1.tank_PAir.port_b.h_outflow
+ -1       1                  0       0                  1  280   # consumer_Water1.valve_In1.kv
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # consumer_Water1.valve_In1.OD_min
+  0       0                  0       0                  6  256   # consumer_Water1.valve_In1.kvs
+  0       0                  0       0                  6  256   # consumer_Water1.valve_In1.OD_valve
+  0       0                  0       0                  6  288   # consumer_Water1.valve_In1.dp
+ -1       1                  0       0                  1  280   # consumer_Water1.valve_In2.kv
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # consumer_Water1.valve_In2.OD_min
+  0       0                  0       0                  6  256   # consumer_Water1.valve_In2.kvs
+  0       0                  0       0                  6  256   # consumer_Water1.valve_In2.OD_valve
+  0       0                  0       0                  6  256   # consumer_Water1.valve_In2.dp
+ -1       1                  0       0                  1  280   # consumer_Water1.valve.kv
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # consumer_Water1.valve.OD_min
+  0       0                  0       0                  6  256   # consumer_Water1.valve.kvs
+  0       0                  0       0                  6  256   # consumer_Water1.valve.OD_valve
+  0       0                  0       0                  6  256   # consumer_Water1.valve.dp
+ -1       1                  0       0                  1  280   # OD_in4.k
+ -1       0                  0       0                  1  280   # OD_in5.k
+ -1       1                  0       0                  1  280   # OD_out3.k
+ -1       1                  0 1.0000000000000000E+100  1  280   # consumer_Water2.h
+  0       0                  0       0                  6  260   # consumer_Water2.port_a1.p
+  0       0                  0       0                  6  388   # consumer_Water2.port_a1.m_flow
+  0       0                  0       0                  6  260   # consumer_Water2.port_a1.h_outflow
+  0       0                  0       0                  6  388   # consumer_Water2.port_a2.m_flow
+  0       0                  0       0                  6  260   # consumer_Water2.port_a2.h_outflow
+  0       0                  0       0                  6  388   # consumer_Water2.port_b.m_flow
+  0       0                  0       0                  6  260   # consumer_Water2.port_b.h_outflow
+  0       1                  0       0                  6  256   # consumer_Water2.h_tank.k
+ -1       1                  0       0                  1  280   # consumer_Water2.tank_PAir.diameter
+ -1       2                  0 1.0000000000000000E+100  1  280   # consumer_Water2.tank_PAir.fluidLevel_max
+ -1  9.9999999999999995E-07  0 1.0000000000000000E+100  1  280   # consumer_Water2.tank_PAir.fluidLevel_min
+  0       0                  0       0                  6  256   # consumer_Water2.tank_PAir.crossArea
+  0       0                  0       0                  6  256   # consumer_Water2.tank_PAir.volume
+  0       0                  0       0                  6  256   # consumer_Water2.tank_PAir.perimeter
+  0       0                  0 1.0000000000000000E+100  6  256   # consumer_Water2.tank_PAir.fluidLevel_nom
+  0       0                  0       0                  6  256   # consumer_Water2.tank_PAir.E
+  0       0                  0       0                  6  256   # consumer_Water2.tank_PAir.der(E)
+ -1       0                  0 1.0000000000000000E+100  2  272   # consumer_Water2.tank_PAir.fluidLevel
+  0       0                  0       0                  3  256   # consumer_Water2.tank_PAir.der(fluidLevel)
+  0       0                  0       0                  6  256   # consumer_Water2.tank_PAir.dp
+  0       0                  0       0                  6  256   # consumer_Water2.tank_PAir.p0_tank
+  0  1.0465000000000000E+05  0       0                  6  260   # consumer_Water2.tank_PAir.port_a1.h_outflow
+  0  1.0465000000000000E+05  0       0                  6  260   # consumer_Water2.tank_PAir.port_a3.h_outflow
+  0       0                  0       0                  6  260   # consumer_Water2.tank_PAir.port_b.p
+  0       0                  0       0                  6  260   # consumer_Water2.tank_PAir.port_b.h_outflow
+ -1       1                  0       0                  1  280   # consumer_Water2.valve_In1.kv
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # consumer_Water2.valve_In1.OD_min
+  0       0                  0       0                  6  256   # consumer_Water2.valve_In1.kvs
+  0       0                  0       0                  6  256   # consumer_Water2.valve_In1.OD_valve
+  0       0                  0       0                  6  288   # consumer_Water2.valve_In1.dp
+ -1       1                  0       0                  1  280   # consumer_Water2.valve_In2.kv
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # consumer_Water2.valve_In2.OD_min
+  0       0                  0       0                  6  256   # consumer_Water2.valve_In2.kvs
+  0       0                  0       0                  6  256   # consumer_Water2.valve_In2.OD_valve
+  0       0                  0       0                  6  256   # consumer_Water2.valve_In2.dp
+ -1       1                  0       0                  1  280   # consumer_Water2.valve.kv
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # consumer_Water2.valve.OD_min
+  0       0                  0       0                  6  256   # consumer_Water2.valve.kvs
+  0       0                  0       0                  6  256   # consumer_Water2.valve.OD_valve
+  0       0                  0       0                  6  256   # consumer_Water2.valve.dp
+ -1       1                  0       0                  1  280   # OD_in2.k
+ -1       0                  0       0                  1  280   # OD_in3.k
+ -1       1                  0       0                  1  280   # OD_out2.k
+  0       0                  0       0                  6  256   # pipeC1.D
+  0       0                  0       0                  6  256   # pipeC1.L
+  0  2.8814999999999998E+02  0 1.0000000000000000E+100  6  260   # pipeC1.Pipe_Heat21.heatport_a.T
+  0       0                  0       0                  6  388   # pipeC1.Pipe_Heat21.heatport_a.Q_flow
+  0       0                  0       0                  6  256   # pipeC1.Pipe_Heat21.length
+  0       0                  0       0                  6  256   # pipeC1.Pipe_Heat21.diameter
+  0       0                  0       0                  6  256   # pipeC1.Pipe_Heat21.crossArea
+  0       0                  0       0                  6  256   # pipeC1.Pipe_Heat21.perimeter
+ -1  2.5000000000000002E-06  0 1.0000000000000000E+100  1  280   # pipeC1.Pipe_Heat21.roughness
+ -1       0                  0       0                  1  280   # pipeC1.Pipe_Heat21.k_m
+  0       0                  0       0                  6  256   # pipeC1.Pipe_Heat21.V
+ -1       0                  0       0                  1  280   # pipeC1.Pipe_Heat21.height_ab
+ -1  2.9314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeC1.Pipe_Heat21.T_start
+  0       0                  0       0                  6  256   # pipeC1.Pipe_Heat21.U_start
+  0       0                  0       0                  6  256   # pipeC1.Pipe_Heat21.f
+  0       0                  0       0                  6  256   # pipeC1.Pipe_Heat21.h_f
+  0       0                  0       0                  6  256   # pipeC1.Pipe_Heat21.h_m
+  0       0                  0       0                  6  256   # pipeC1.Pipe_Heat21.dp
+ -1  1.0000000000000000E-03  0       0                  2  280   # pipeC1.Pipe_Heat21.V_flow
+  0       0                  0       0                  3  256   # pipeC1.Pipe_Heat21.der(V_flow)
+ -1       0                  0 1.0000000000000000E+100  2  272   # pipeC1.Pipe_Heat21.T
+  0       0                  0       0                  3  256   # pipeC1.Pipe_Heat21.der(T)
+  0  2.8814999999999998E+02  0 1.0000000000000000E+100  6  260   # pipeC1.Pipe_Heat11.heatport_a.T
+  0       0                  0       0                  6  388   # pipeC1.Pipe_Heat11.heatport_a.Q_flow
+  0       0                  0       0                  6  256   # pipeC1.Pipe_Heat11.length
+  0       0                  0       0                  6  256   # pipeC1.Pipe_Heat11.diameter
+  0       0                  0       0                  6  256   # pipeC1.Pipe_Heat11.crossArea
+  0       0                  0       0                  6  256   # pipeC1.Pipe_Heat11.perimeter
+ -1  2.5000000000000002E-06  0 1.0000000000000000E+100  1  280   # pipeC1.Pipe_Heat11.roughness
+ -1       0                  0       0                  1  280   # pipeC1.Pipe_Heat11.k_m
+  0       0                  0       0                  6  256   # pipeC1.Pipe_Heat11.V
+ -1       0                  0       0                  1  280   # pipeC1.Pipe_Heat11.height_ab
+ -1  2.9314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeC1.Pipe_Heat11.T_start
+  0       0                  0       0                  6  256   # pipeC1.Pipe_Heat11.U_start
+  0       0                  0       0                  6  256   # pipeC1.Pipe_Heat11.f
+  0       0                  0       0                  6  256   # pipeC1.Pipe_Heat11.h_f
+  0       0                  0       0                  6  256   # pipeC1.Pipe_Heat11.h_m
+  0       0                  0       0                  6  256   # pipeC1.Pipe_Heat11.dp
+  0  1.0000000000000000E-03  0       0                  6  256   # pipeC1.Pipe_Heat11.V_flow
+  0       0                  0       0                  6  256   # pipeC1.Pipe_Heat11.der(V_flow)
+ -1       0                  0 1.0000000000000000E+100  2  272   # pipeC1.Pipe_Heat11.T
+  0       0                  0       0                  3  256   # pipeC1.Pipe_Heat11.der(T)
+ -1   -1800                  0       0                  1  280   # pipeC1.fixedHeatFlow1.Q_flow
+ -1  2.7314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeC1.fixedHeatFlow1.T_ref
+ -1       1                  0       0                  1  280   # pipeC1.fixedHeatFlow1.alpha
+ -1   -1800                  0       0                  1  280   # pipeC1.fixedHeatFlow2.Q_flow
+ -1  2.7314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeC1.fixedHeatFlow2.T_ref
+ -1       1                  0       0                  1  280   # pipeC1.fixedHeatFlow2.alpha
+  0       0                  0       0                  6  260   # pipeC1.port_a1.p
+  0       0                  0       0                  6  388   # pipeC1.port_a1.m_flow
+  0       0                  0       0                  6  260   # pipeC1.port_a1.der(m_flow)
+  0       0                  0       0                  6  260   # pipeC1.port_a1.h_outflow
+  0       0                  0       0                  6  260   # pipeC1.port_a2.p
+  0       0                  0       0                  6  260   # pipeC1.port_a2.h_outflow
+ -1      20                  0       0                  1  280   # PipeA_L
+ -1      20                  0       0                  1  280   # PipeC_L
+ -1  2.5000000000000001E-02  0       0                  1  280   # PipeA_D
+ -1  1.4999999999999999E-02  0       0                  1  280   # PipeC_D
+  0       0                  0       0                  6  256   # dp_pumping_station
+  0       0                  0       0                  6  256   # dp_consumer1
+  0       0                  0       0                  6  256   # dp_consumer2
+  0       0                  0       0                  6  256   # dp_consumer3
+  0       0                  0       0                  6  256   # h_consumer1
+  0       0                  0       0                  6  256   # h_consumer2
+  0       0                  0       0                  6  256   # h_consumer3
+  0       0                  0       0                  6  256   # q_consumer1
+  0       0                  0       0                  6  256   # q_consumer2
+  0       0                  0       0                  6  256   # q_consumer3
+  0       0                  0       0                  6  256   # q_pumping
+  0       0                  0       0                  6  256   # dp_pumping_station2
+  0       0                  0       0                  6  256   # dp_consumer21
+  0       0                  0       0                  6  256   # dp_consumer22
+  0       0                  0       0                  6  256   # dp_consumer23
+  0       0                  0       0                  6  256   # h_consumer21
+  0       0                  0       0                  6  256   # h_consumer22
+  0       0                  0       0                  6  256   # h_consumer23
+  0       0                  0       0                  6  256   # q_consumer21
+  0       0                  0       0                  6  256   # q_consumer22
+  0       0                  0       0                  6  256   # q_consumer23
+  0       0                  0       0                  6  256   # q_pumping2
+ -1  1.0132500000000000E+05  0       0                  1  280   # sink_pT.p
+ -1  2.9814999999999998E+02  0 1.0000000000000000E+100  1  280   # sink_pT.T
+  0       0                  0       0                  6  260   # sink_pT.port_a.h_outflow
+ -1  1.0132500000000000E+05  0       0                  1  280   # sink_pT1.p
+ -1  2.9814999999999998E+02  0 1.0000000000000000E+100  1  280   # sink_pT1.T
+  0       0                  0       0                  6  260   # sink_pT1.port_a.h_outflow
+  0       0                  0       0                  6  256   # pipeA1.D
+  0       0                  0       0                  6  256   # pipeA1.L
+  0  2.8814999999999998E+02  0 1.0000000000000000E+100  6  260   # pipeA1.Pipe_Heat21.heatport_a.T
+  0       0                  0       0                  6  388   # pipeA1.Pipe_Heat21.heatport_a.Q_flow
+  0       0                  0       0                  6  256   # pipeA1.Pipe_Heat21.length
+  0       0                  0       0                  6  256   # pipeA1.Pipe_Heat21.diameter
+  0       0                  0       0                  6  256   # pipeA1.Pipe_Heat21.crossArea
+  0       0                  0       0                  6  256   # pipeA1.Pipe_Heat21.perimeter
+ -1  2.5000000000000002E-06  0 1.0000000000000000E+100  1  280   # pipeA1.Pipe_Heat21.roughness
+ -1       0                  0       0                  1  280   # pipeA1.Pipe_Heat21.k_m
+  0       0                  0       0                  6  256   # pipeA1.Pipe_Heat21.V
+ -1       0                  0       0                  1  280   # pipeA1.Pipe_Heat21.height_ab
+ -1  2.9314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeA1.Pipe_Heat21.T_start
+  0       0                  0       0                  6  256   # pipeA1.Pipe_Heat21.U_start
+  0       0                  0       0                  6  256   # pipeA1.Pipe_Heat21.f
+  0       0                  0       0                  6  256   # pipeA1.Pipe_Heat21.h_f
+  0       0                  0       0                  6  256   # pipeA1.Pipe_Heat21.h_m
+  0       0                  0       0                  6  256   # pipeA1.Pipe_Heat21.dp
+  0  1.0000000000000000E-03  0       0                  6  256   # pipeA1.Pipe_Heat21.V_flow
+  0       0                  0       0                  6  256   # pipeA1.Pipe_Heat21.der(V_flow)
+ -1       0                  0 1.0000000000000000E+100  2  272   # pipeA1.Pipe_Heat21.T
+  0       0                  0       0                  3  256   # pipeA1.Pipe_Heat21.der(T)
+  0  2.8814999999999998E+02  0 1.0000000000000000E+100  6  260   # pipeA1.Pipe_Heat11.heatport_a.T
+  0       0                  0       0                  6  388   # pipeA1.Pipe_Heat11.heatport_a.Q_flow
+  0       0                  0       0                  6  256   # pipeA1.Pipe_Heat11.length
+  0       0                  0       0                  6  256   # pipeA1.Pipe_Heat11.diameter
+  0       0                  0       0                  6  256   # pipeA1.Pipe_Heat11.crossArea
+  0       0                  0       0                  6  256   # pipeA1.Pipe_Heat11.perimeter
+ -1  2.5000000000000002E-06  0 1.0000000000000000E+100  1  280   # pipeA1.Pipe_Heat11.roughness
+ -1       0                  0       0                  1  280   # pipeA1.Pipe_Heat11.k_m
+  0       0                  0       0                  6  256   # pipeA1.Pipe_Heat11.V
+ -1       0                  0       0                  1  280   # pipeA1.Pipe_Heat11.height_ab
+ -1  2.9314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeA1.Pipe_Heat11.T_start
+  0       0                  0       0                  6  256   # pipeA1.Pipe_Heat11.U_start
+  0       0                  0       0                  6  256   # pipeA1.Pipe_Heat11.f
+  0       0                  0       0                  6  256   # pipeA1.Pipe_Heat11.h_f
+  0       0                  0       0                  6  256   # pipeA1.Pipe_Heat11.h_m
+  0       0                  0       0                  6  256   # pipeA1.Pipe_Heat11.dp
+  0  1.0000000000000000E-03  0       0                  6  256   # pipeA1.Pipe_Heat11.V_flow
+  0       0                  0       0                  6  256   # pipeA1.Pipe_Heat11.der(V_flow)
+ -1       0                  0 1.0000000000000000E+100  2  272   # pipeA1.Pipe_Heat11.T
+  0       0                  0       0                  3  256   # pipeA1.Pipe_Heat11.der(T)
+ -1   -1800                  0       0                  1  280   # pipeA1.fixedHeatFlow1.Q_flow
+ -1  2.7314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeA1.fixedHeatFlow1.T_ref
+ -1       1                  0       0                  1  280   # pipeA1.fixedHeatFlow1.alpha
+ -1   -1800                  0       0                  1  280   # pipeA1.fixedHeatFlow2.Q_flow
+ -1  2.7314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeA1.fixedHeatFlow2.T_ref
+ -1       1                  0       0                  1  280   # pipeA1.fixedHeatFlow2.alpha
+  0       0                  0       0                  6  260   # pipeA1.port_a1.h_outflow
+  0       0                  0       0                  6  260   # pipeA1.port_a2.p
+  0       0                  0       0                  6  260   # pipeA1.port_a2.h_outflow
+  0       0                  0       0                  6  256   # pipeC2.D
+  0       0                  0       0                  6  256   # pipeC2.L
+  0  2.8814999999999998E+02  0 1.0000000000000000E+100  6  260   # pipeC2.Pipe_Heat21.heatport_a.T
+  0       0                  0       0                  6  388   # pipeC2.Pipe_Heat21.heatport_a.Q_flow
+  0       0                  0       0                  6  256   # pipeC2.Pipe_Heat21.length
+  0       0                  0       0                  6  256   # pipeC2.Pipe_Heat21.diameter
+  0       0                  0       0                  6  256   # pipeC2.Pipe_Heat21.crossArea
+  0       0                  0       0                  6  256   # pipeC2.Pipe_Heat21.perimeter
+ -1  2.5000000000000002E-06  0 1.0000000000000000E+100  1  280   # pipeC2.Pipe_Heat21.roughness
+ -1       0                  0       0                  1  280   # pipeC2.Pipe_Heat21.k_m
+  0       0                  0       0                  6  256   # pipeC2.Pipe_Heat21.V
+ -1       0                  0       0                  1  280   # pipeC2.Pipe_Heat21.height_ab
+ -1  2.9314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeC2.Pipe_Heat21.T_start
+  0       0                  0       0                  6  256   # pipeC2.Pipe_Heat21.U_start
+  0       0                  0       0                  6  256   # pipeC2.Pipe_Heat21.f
+  0       0                  0       0                  6  256   # pipeC2.Pipe_Heat21.h_f
+  0       0                  0       0                  6  256   # pipeC2.Pipe_Heat21.h_m
+  0       0                  0       0                  6  256   # pipeC2.Pipe_Heat21.dp
+  0  1.0000000000000000E-03  0       0                  6  256   # pipeC2.Pipe_Heat21.V_flow
+  0       0                  0       0                  6  256   # pipeC2.Pipe_Heat21.der(V_flow)
+ -1       0                  0 1.0000000000000000E+100  2  272   # pipeC2.Pipe_Heat21.T
+  0       0                  0       0                  3  256   # pipeC2.Pipe_Heat21.der(T)
+  0  2.8814999999999998E+02  0 1.0000000000000000E+100  6  260   # pipeC2.Pipe_Heat11.heatport_a.T
+  0       0                  0       0                  6  388   # pipeC2.Pipe_Heat11.heatport_a.Q_flow
+  0       0                  0       0                  6  256   # pipeC2.Pipe_Heat11.length
+  0       0                  0       0                  6  256   # pipeC2.Pipe_Heat11.diameter
+  0       0                  0       0                  6  256   # pipeC2.Pipe_Heat11.crossArea
+  0       0                  0       0                  6  256   # pipeC2.Pipe_Heat11.perimeter
+ -1  2.5000000000000002E-06  0 1.0000000000000000E+100  1  280   # pipeC2.Pipe_Heat11.roughness
+ -1       0                  0       0                  1  280   # pipeC2.Pipe_Heat11.k_m
+  0       0                  0       0                  6  256   # pipeC2.Pipe_Heat11.V
+ -1       0                  0       0                  1  280   # pipeC2.Pipe_Heat11.height_ab
+ -1  2.9314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeC2.Pipe_Heat11.T_start
+  0       0                  0       0                  6  256   # pipeC2.Pipe_Heat11.U_start
+  0       0                  0       0                  6  256   # pipeC2.Pipe_Heat11.f
+  0       0                  0       0                  6  256   # pipeC2.Pipe_Heat11.h_f
+  0       0                  0       0                  6  256   # pipeC2.Pipe_Heat11.h_m
+  0       0                  0       0                  6  256   # pipeC2.Pipe_Heat11.dp
+ -1  1.0000000000000000E-03  0       0                  2  280   # pipeC2.Pipe_Heat11.V_flow
+  0       0                  0       0                  3  256   # pipeC2.Pipe_Heat11.der(V_flow)
+ -1       0                  0 1.0000000000000000E+100  2  272   # pipeC2.Pipe_Heat11.T
+  0       0                  0       0                  3  256   # pipeC2.Pipe_Heat11.der(T)
+ -1   -1800                  0       0                  1  280   # pipeC2.fixedHeatFlow1.Q_flow
+ -1  2.7314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeC2.fixedHeatFlow1.T_ref
+ -1       1                  0       0                  1  280   # pipeC2.fixedHeatFlow1.alpha
+ -1   -1800                  0       0                  1  280   # pipeC2.fixedHeatFlow2.Q_flow
+ -1  2.7314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeC2.fixedHeatFlow2.T_ref
+ -1       1                  0       0                  1  280   # pipeC2.fixedHeatFlow2.alpha
+  0       0                  0       0                  6  260   # pipeC2.port_a1.p
+  0       0                  0       0                  6  388   # pipeC2.port_a1.m_flow
+  0       0                  0       0                  6  260   # pipeC2.port_a1.der(m_flow)
+  0       0                  0       0                  6  260   # pipeC2.port_a1.h_outflow
+  0       0                  0       0                  6  260   # pipeC2.port_a2.p
+  0       0                  0       0                  6  260   # pipeC2.port_a2.h_outflow
+ -1       2                  0 1.0000000000000000E+100  1  280   # consumer_Water3.h
+  0       0                  0       0                  6  260   # consumer_Water3.port_a1.p
+  0       0                  0       0                  6  388   # consumer_Water3.port_a1.m_flow
+  0       0                  0       0                  6  260   # consumer_Water3.port_a1.h_outflow
+  0       0                  0       0                  6  388   # consumer_Water3.port_a2.m_flow
+  0       0                  0       0                  6  260   # consumer_Water3.port_a2.h_outflow
+  0       0                  0       0                  6  388   # consumer_Water3.port_b.m_flow
+  0       0                  0       0                  6  260   # consumer_Water3.port_b.h_outflow
+  0       1                  0       0                  6  256   # consumer_Water3.h_tank.k
+ -1       1                  0       0                  1  280   # consumer_Water3.tank_PAir.diameter
+ -1       2                  0 1.0000000000000000E+100  1  280   # consumer_Water3.tank_PAir.fluidLevel_max
+ -1  9.9999999999999995E-07  0 1.0000000000000000E+100  1  280   # consumer_Water3.tank_PAir.fluidLevel_min
+  0       0                  0       0                  6  256   # consumer_Water3.tank_PAir.crossArea
+  0       0                  0       0                  6  256   # consumer_Water3.tank_PAir.volume
+  0       0                  0       0                  6  256   # consumer_Water3.tank_PAir.perimeter
+  0       0                  0 1.0000000000000000E+100  6  256   # consumer_Water3.tank_PAir.fluidLevel_nom
+  0       0                  0       0                  6  256   # consumer_Water3.tank_PAir.E
+  0       0                  0       0                  6  256   # consumer_Water3.tank_PAir.der(E)
+ -1       0                  0 1.0000000000000000E+100  2  272   # consumer_Water3.tank_PAir.fluidLevel
+  0       0                  0       0                  3  256   # consumer_Water3.tank_PAir.der(fluidLevel)
+  0       0                  0       0                  6  256   # consumer_Water3.tank_PAir.dp
+  0       0                  0       0                  6  256   # consumer_Water3.tank_PAir.p0_tank
+  0  1.0465000000000000E+05  0       0                  6  260   # consumer_Water3.tank_PAir.port_a1.h_outflow
+  0  1.0465000000000000E+05  0       0                  6  260   # consumer_Water3.tank_PAir.port_a3.h_outflow
+  0       0                  0       0                  6  260   # consumer_Water3.tank_PAir.port_b.p
+  0       0                  0       0                  6  260   # consumer_Water3.tank_PAir.port_b.h_outflow
+ -1       1                  0       0                  1  280   # consumer_Water3.valve_In1.kv
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # consumer_Water3.valve_In1.OD_min
+  0       0                  0       0                  6  256   # consumer_Water3.valve_In1.kvs
+  0       0                  0       0                  6  256   # consumer_Water3.valve_In1.OD_valve
+  0       0                  0       0                  6  288   # consumer_Water3.valve_In1.dp
+ -1       1                  0       0                  1  280   # consumer_Water3.valve_In2.kv
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # consumer_Water3.valve_In2.OD_min
+  0       0                  0       0                  6  256   # consumer_Water3.valve_In2.kvs
+  0       0                  0       0                  6  256   # consumer_Water3.valve_In2.OD_valve
+  0       0                  0       0                  6  256   # consumer_Water3.valve_In2.dp
+ -1       1                  0       0                  1  280   # consumer_Water3.valve.kv
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # consumer_Water3.valve.OD_min
+  0       0                  0       0                  6  256   # consumer_Water3.valve.kvs
+  0       0                  0       0                  6  256   # consumer_Water3.valve.OD_valve
+  0       0                  0       0                  6  256   # consumer_Water3.valve.dp
+ -1       1                  0       0                  1  280   # OD_in6.k
+ -1       0                  0       0                  1  280   # OD_in7.k
+ -1       1                  0       0                  1  280   # OD_out4.k
+ -1  1.0132500000000000E+05  0       0                  1  280   # sink_pT2.p
+ -1  2.9814999999999998E+02  0 1.0000000000000000E+100  1  280   # sink_pT2.T
+  0       0                  0       0                  6  260   # sink_pT2.port_a.h_outflow
+  0       0                  0       0                  6  256   # pipeC3.D
+  0       0                  0       0                  6  256   # pipeC3.L
+  0  2.8814999999999998E+02  0 1.0000000000000000E+100  6  260   # pipeC3.Pipe_Heat21.heatport_a.T
+  0       0                  0       0                  6  388   # pipeC3.Pipe_Heat21.heatport_a.Q_flow
+  0       0                  0       0                  6  256   # pipeC3.Pipe_Heat21.length
+  0       0                  0       0                  6  256   # pipeC3.Pipe_Heat21.diameter
+  0       0                  0       0                  6  256   # pipeC3.Pipe_Heat21.crossArea
+  0       0                  0       0                  6  256   # pipeC3.Pipe_Heat21.perimeter
+ -1  2.5000000000000002E-06  0 1.0000000000000000E+100  1  280   # pipeC3.Pipe_Heat21.roughness
+ -1       0                  0       0                  1  280   # pipeC3.Pipe_Heat21.k_m
+  0       0                  0       0                  6  256   # pipeC3.Pipe_Heat21.V
+ -1       0                  0       0                  1  280   # pipeC3.Pipe_Heat21.height_ab
+ -1  2.9314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeC3.Pipe_Heat21.T_start
+  0       0                  0       0                  6  256   # pipeC3.Pipe_Heat21.U_start
+  0       0                  0       0                  6  256   # pipeC3.Pipe_Heat21.f
+  0       0                  0       0                  6  256   # pipeC3.Pipe_Heat21.h_f
+  0       0                  0       0                  6  256   # pipeC3.Pipe_Heat21.h_m
+  0       0                  0       0                  6  256   # pipeC3.Pipe_Heat21.dp
+  0  1.0000000000000000E-03  0       0                  6  256   # pipeC3.Pipe_Heat21.V_flow
+  0       0                  0       0                  6  256   # pipeC3.Pipe_Heat21.der(V_flow)
+ -1       0                  0 1.0000000000000000E+100  2  272   # pipeC3.Pipe_Heat21.T
+  0       0                  0       0                  3  256   # pipeC3.Pipe_Heat21.der(T)
+  0  2.8814999999999998E+02  0 1.0000000000000000E+100  6  260   # pipeC3.Pipe_Heat11.heatport_a.T
+  0       0                  0       0                  6  388   # pipeC3.Pipe_Heat11.heatport_a.Q_flow
+  0       0                  0       0                  6  256   # pipeC3.Pipe_Heat11.length
+  0       0                  0       0                  6  256   # pipeC3.Pipe_Heat11.diameter
+  0       0                  0       0                  6  256   # pipeC3.Pipe_Heat11.crossArea
+  0       0                  0       0                  6  256   # pipeC3.Pipe_Heat11.perimeter
+ -1  2.5000000000000002E-06  0 1.0000000000000000E+100  1  280   # pipeC3.Pipe_Heat11.roughness
+ -1       0                  0       0                  1  280   # pipeC3.Pipe_Heat11.k_m
+  0       0                  0       0                  6  256   # pipeC3.Pipe_Heat11.V
+ -1       0                  0       0                  1  280   # pipeC3.Pipe_Heat11.height_ab
+ -1  2.9314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeC3.Pipe_Heat11.T_start
+  0       0                  0       0                  6  256   # pipeC3.Pipe_Heat11.U_start
+  0       0                  0       0                  6  256   # pipeC3.Pipe_Heat11.f
+  0       0                  0       0                  6  256   # pipeC3.Pipe_Heat11.h_f
+  0       0                  0       0                  6  256   # pipeC3.Pipe_Heat11.h_m
+  0       0                  0       0                  6  256   # pipeC3.Pipe_Heat11.dp
+  0  1.0000000000000000E-03  0       0                  6  256   # pipeC3.Pipe_Heat11.V_flow
+  0       0                  0       0                  6  256   # pipeC3.Pipe_Heat11.der(V_flow)
+ -1       0                  0 1.0000000000000000E+100  2  272   # pipeC3.Pipe_Heat11.T
+  0       0                  0       0                  3  256   # pipeC3.Pipe_Heat11.der(T)
+ -1   -1800                  0       0                  1  280   # pipeC3.fixedHeatFlow1.Q_flow
+ -1  2.7314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeC3.fixedHeatFlow1.T_ref
+ -1       1                  0       0                  1  280   # pipeC3.fixedHeatFlow1.alpha
+ -1   -1800                  0       0                  1  280   # pipeC3.fixedHeatFlow2.Q_flow
+ -1  2.7314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeC3.fixedHeatFlow2.T_ref
+ -1       1                  0       0                  1  280   # pipeC3.fixedHeatFlow2.alpha
+  0       0                  0       0                  6  260   # pipeC3.port_a1.p
+  0       0                  0       0                  6  388   # pipeC3.port_a1.m_flow
+  0       0                  0       0                  6  260   # pipeC3.port_a1.der(m_flow)
+  0       0                  0       0                  6  260   # pipeC3.port_a1.h_outflow
+  0       0                  0       0                  6  260   # pipeC3.port_a2.p
+  0       0                  0       0                  6  260   # pipeC3.port_a2.h_outflow
+  0       0                  0       0                  6  256   # pipeA2.D
+  0       0                  0       0                  6  256   # pipeA2.L
+  0  2.8814999999999998E+02  0 1.0000000000000000E+100  6  260   # pipeA2.Pipe_Heat21.heatport_a.T
+  0       0                  0       0                  6  388   # pipeA2.Pipe_Heat21.heatport_a.Q_flow
+  0       0                  0       0                  6  256   # pipeA2.Pipe_Heat21.length
+  0       0                  0       0                  6  256   # pipeA2.Pipe_Heat21.diameter
+  0       0                  0       0                  6  256   # pipeA2.Pipe_Heat21.crossArea
+  0       0                  0       0                  6  256   # pipeA2.Pipe_Heat21.perimeter
+ -1  2.5000000000000002E-06  0 1.0000000000000000E+100  1  280   # pipeA2.Pipe_Heat21.roughness
+ -1       0                  0       0                  1  280   # pipeA2.Pipe_Heat21.k_m
+  0       0                  0       0                  6  256   # pipeA2.Pipe_Heat21.V
+ -1       0                  0       0                  1  280   # pipeA2.Pipe_Heat21.height_ab
+ -1  2.9314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeA2.Pipe_Heat21.T_start
+  0       0                  0       0                  6  256   # pipeA2.Pipe_Heat21.U_start
+  0       0                  0       0                  6  256   # pipeA2.Pipe_Heat21.f
+  0       0                  0       0                  6  256   # pipeA2.Pipe_Heat21.h_f
+  0       0                  0       0                  6  256   # pipeA2.Pipe_Heat21.h_m
+  0       0                  0       0                  6  256   # pipeA2.Pipe_Heat21.dp
+  0  1.0000000000000000E-03  0       0                  6  256   # pipeA2.Pipe_Heat21.V_flow
+  0       0                  0       0                  6  256   # pipeA2.Pipe_Heat21.der(V_flow)
+ -1       0                  0 1.0000000000000000E+100  2  272   # pipeA2.Pipe_Heat21.T
+  0       0                  0       0                  3  256   # pipeA2.Pipe_Heat21.der(T)
+  0  2.8814999999999998E+02  0 1.0000000000000000E+100  6  260   # pipeA2.Pipe_Heat11.heatport_a.T
+  0       0                  0       0                  6  388   # pipeA2.Pipe_Heat11.heatport_a.Q_flow
+  0       0                  0       0                  6  256   # pipeA2.Pipe_Heat11.length
+  0       0                  0       0                  6  256   # pipeA2.Pipe_Heat11.diameter
+  0       0                  0       0                  6  256   # pipeA2.Pipe_Heat11.crossArea
+  0       0                  0       0                  6  256   # pipeA2.Pipe_Heat11.perimeter
+ -1  2.5000000000000002E-06  0 1.0000000000000000E+100  1  280   # pipeA2.Pipe_Heat11.roughness
+ -1       0                  0       0                  1  280   # pipeA2.Pipe_Heat11.k_m
+  0       0                  0       0                  6  256   # pipeA2.Pipe_Heat11.V
+ -1       0                  0       0                  1  280   # pipeA2.Pipe_Heat11.height_ab
+ -1  2.9314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeA2.Pipe_Heat11.T_start
+  0       0                  0       0                  6  256   # pipeA2.Pipe_Heat11.U_start
+  0       0                  0       0                  6  256   # pipeA2.Pipe_Heat11.f
+  0       0                  0       0                  6  256   # pipeA2.Pipe_Heat11.h_f
+  0       0                  0       0                  6  256   # pipeA2.Pipe_Heat11.h_m
+  0       0                  0       0                  6  256   # pipeA2.Pipe_Heat11.dp
+ -1  1.0000000000000000E-03  0       0                  2  280   # pipeA2.Pipe_Heat11.V_flow
+  0       0                  0       0                  3  256   # pipeA2.Pipe_Heat11.der(V_flow)
+ -1       0                  0 1.0000000000000000E+100  2  272   # pipeA2.Pipe_Heat11.T
+  0       0                  0       0                  3  256   # pipeA2.Pipe_Heat11.der(T)
+ -1   -1800                  0       0                  1  280   # pipeA2.fixedHeatFlow1.Q_flow
+ -1  2.7314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeA2.fixedHeatFlow1.T_ref
+ -1       1                  0       0                  1  280   # pipeA2.fixedHeatFlow1.alpha
+ -1   -1800                  0       0                  1  280   # pipeA2.fixedHeatFlow2.Q_flow
+ -1  2.7314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeA2.fixedHeatFlow2.T_ref
+ -1       1                  0       0                  1  280   # pipeA2.fixedHeatFlow2.alpha
+  0       0                  0       0                  6  388   # pipeA2.port_a1.m_flow
+  0       0                  0       0                  6  260   # pipeA2.port_a1.der(m_flow)
+  0       0                  0       0                  6  260   # pipeA2.port_a1.h_outflow
+  0       0                  0       0                  6  260   # pipeA2.port_a2.h_outflow
+ -1  5.0000000000000000E-01  0       0                  1  280   # source_qT1.m_flow
+ -1  2.9814999999999998E+02  0 1.0000000000000000E+100  1  280   # source_qT1.T
+  0       0                  0       0                  6  260   # source_qT1.port_b.p
+  0       0                  0       0                  6  260   # source_qT1.port_b.h_outflow
+ -1       1                  0       0                  1  280   # pumping2.Tank.diameter
+ -1       2                  0 1.0000000000000000E+100  1  280   # pumping2.Tank.fluidLevel_max
+ -1  9.9999999999999995E-07  0 1.0000000000000000E+100  1  280   # pumping2.Tank.fluidLevel_min
+  0       0                  0       0                  6  256   # pumping2.Tank.crossArea
+  0       0                  0       0                  6  256   # pumping2.Tank.perimeter
+  0       0                  0 1.0000000000000000E+100  6  256   # pumping2.Tank.fluidLevel_nom
+  0       0                  0       0                  6  256   # pumping2.Tank.E
+  0       0                  0       0                  6  256   # pumping2.Tank.der(E)
+ -1       0                  0 1.0000000000000000E+100  2  272   # pumping2.Tank.fluidLevel
+  0       0                  0       0                  3  256   # pumping2.Tank.der(fluidLevel)
+  0       0                  0       0                  6  256   # pumping2.Tank.dp
+  0  1.0132500000000000E+05  0       0                  6  260   # pumping2.Tank.port_a.p
+  0  1.0465000000000000E+05  0       0                  6  260   # pumping2.Tank.port_a.h_outflow
+  0       0                  0       0                  6  260   # pumping2.Tank.port_b.p
+  0       0                  0       0                  6  388   # pumping2.Tank.port_b.m_flow
+  0       0                  0       0                  6  260   # pumping2.Tank.port_b.h_outflow
+  0       0                  0       0                  6  260   # pumping2.port_a.h_outflow
+  0       0                  0       0                  6  260   # pumping2.port_b.p
+  0       0                  0       0                  6  388   # pumping2.port_b.m_flow
+  0       0                  0       0                  6  260   # pumping2.port_b.der(m_flow)
+  0       0                  0       0                  6  260   # pumping2.port_b.h_outflow
+  0       0                  0       0                  6  388   # pumping2.basicPump.port_a.m_flow
+  0       0                  0       0                  6  260   # pumping2.basicPump.port_a.h_outflow
+  0       0                  0       0                  6  260   # pumping2.basicPump.port_b.p
+ -1 -1.8300000000000000E-01  0       0                  1  280   # pumping2.basicPump.ah_2
+ -1 -1.8040000000000000E-01  0       0                  1  280   # pumping2.basicPump.ah_1
+ -1  7.0579000000000001E+00  0       0                  1  280   # pumping2.basicPump.ah_0
+ -1  1.0000000000000000E-03  0       0                  1  280   # pumping2.basicPump.V_flow_min
+  0       0                  0 1.0000000000000000E+100  6  256   # pumping2.basicPump.h_p
+  0       0                  0       0                  6  256   # pumping2.basicPump.dp
+  0       0                  0       0                  6  288   # pumping2.basicPump.V_flow
+  0       0                  0       0                  6  388   # pumping2.basicPump1.port_a.m_flow
+  0       0                  0       0                  6  260   # pumping2.basicPump1.port_a.h_outflow
+ -1 -1.8300000000000000E-01  0       0                  1  280   # pumping2.basicPump1.ah_2
+ -1 -1.8040000000000000E-01  0       0                  1  280   # pumping2.basicPump1.ah_1
+ -1  7.0579000000000001E+00  0       0                  1  280   # pumping2.basicPump1.ah_0
+ -1  1.0000000000000000E-03  0       0                  1  280   # pumping2.basicPump1.V_flow_min
+  0       0                  0 1.0000000000000000E+100  6  256   # pumping2.basicPump1.h_p
+  0       0                  0       0                  6  256   # pumping2.basicPump1.dp
+  0       0                  0       0                  6  288   # pumping2.basicPump1.V_flow
+  0       1                  0       0                  6  256   # pumping2.OD_out8.k
+ -1       1                  0       0                  1  280   # pumping2.OD_Outlet2
+ -1      46                  0       0                  1  280   # pumping2.valve_Out3.kv
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # pumping2.valve_Out3.OD_min
+  0       0                  0       0                  6  256   # pumping2.valve_Out3.kvs
+  0       0                  0       0                  6  256   # pumping2.valve_Out3.OD_valve
+  0       0                  0       0                  6  288   # pumping2.valve_Out3.dp
+  0       0                  0       0                  6  388   # pumping2.valve_Out2.port_a.m_flow
+  0       0                  0       0                  6  260   # pumping2.valve_Out2.port_a.h_outflow
+ -1       1                  0       0                  1  280   # pumping2.valve_Out2.kv
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # pumping2.valve_Out2.OD_min
+  0       0                  0       0                  6  256   # pumping2.valve_Out2.kvs
+  0       0                  0       0                  6  256   # pumping2.valve_Out2.OD_valve
+  0       0                  0       0                  6  256   # pumping2.valve_Out2.dp
+  0  1.0132500000000000E+05  0       0                  6  260   # pumping2.valve_In1.port_b.p
+ -1       1                  0       0                  1  280   # pumping2.valve_In1.kv
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # pumping2.valve_In1.OD_min
+  0       0                  0       0                  6  256   # pumping2.valve_In1.kvs
+  0       0                  0       0                  6  256   # pumping2.valve_In1.OD_valve
+  0       0                  0       0                  6  288   # pumping2.valve_In1.dp
+ -1  8.0000000000000004E-01  0       0                  1  280   # OD_in8.k
+ -1       0                  0       0                  1  280   # OD_out5.k
+ -1  8.0000000000000004E-01  0       0                  1  280   # PWM_out2.k
+ -1       0                  0 1.0000000000000000E+100  1  280   # consumer_Water21.h
+  0       0                  0       0                  6  260   # consumer_Water21.port_a1.p
+  0       0                  0       0                  6  388   # consumer_Water21.port_a1.m_flow
+  0       0                  0       0                  6  260   # consumer_Water21.port_a1.h_outflow
+  0       0                  0       0                  6  388   # consumer_Water21.port_a2.m_flow
+  0       0                  0       0                  6  260   # consumer_Water21.port_a2.h_outflow
+  0       0                  0       0                  6  388   # consumer_Water21.port_b.m_flow
+  0       0                  0       0                  6  260   # consumer_Water21.port_b.h_outflow
+  0       1                  0       0                  6  256   # consumer_Water21.h_tank.k
+ -1       1                  0       0                  1  280   # consumer_Water21.tank_PAir.diameter
+ -1       2                  0 1.0000000000000000E+100  1  280   # consumer_Water21.tank_PAir.fluidLevel_max
+ -1  9.9999999999999995E-07  0 1.0000000000000000E+100  1  280   # consumer_Water21.tank_PAir.fluidLevel_min
+  0       0                  0       0                  6  256   # consumer_Water21.tank_PAir.crossArea
+  0       0                  0       0                  6  256   # consumer_Water21.tank_PAir.volume
+  0       0                  0       0                  6  256   # consumer_Water21.tank_PAir.perimeter
+  0       0                  0 1.0000000000000000E+100  6  256   # consumer_Water21.tank_PAir.fluidLevel_nom
+  0       0                  0       0                  6  256   # consumer_Water21.tank_PAir.E
+  0       0                  0       0                  6  256   # consumer_Water21.tank_PAir.der(E)
+ -1       0                  0 1.0000000000000000E+100  2  272   # consumer_Water21.tank_PAir.fluidLevel
+  0       0                  0       0                  3  256   # consumer_Water21.tank_PAir.der(fluidLevel)
+  0       0                  0       0                  6  256   # consumer_Water21.tank_PAir.dp
+  0       0                  0       0                  6  256   # consumer_Water21.tank_PAir.p0_tank
+  0  1.0465000000000000E+05  0       0                  6  260   # consumer_Water21.tank_PAir.port_a1.h_outflow
+  0  1.0465000000000000E+05  0       0                  6  260   # consumer_Water21.tank_PAir.port_a3.h_outflow
+  0       0                  0       0                  6  260   # consumer_Water21.tank_PAir.port_b.p
+  0       0                  0       0                  6  260   # consumer_Water21.tank_PAir.port_b.h_outflow
+ -1       1                  0       0                  1  280   # consumer_Water21.valve_In1.kv
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # consumer_Water21.valve_In1.OD_min
+  0       0                  0       0                  6  256   # consumer_Water21.valve_In1.kvs
+  0       0                  0       0                  6  256   # consumer_Water21.valve_In1.OD_valve
+  0       0                  0       0                  6  288   # consumer_Water21.valve_In1.dp
+ -1       1                  0       0                  1  280   # consumer_Water21.valve_In2.kv
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # consumer_Water21.valve_In2.OD_min
+  0       0                  0       0                  6  256   # consumer_Water21.valve_In2.kvs
+  0       0                  0       0                  6  256   # consumer_Water21.valve_In2.OD_valve
+  0       0                  0       0                  6  256   # consumer_Water21.valve_In2.dp
+ -1       1                  0       0                  1  280   # consumer_Water21.valve.kv
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # consumer_Water21.valve.OD_min
+  0       0                  0       0                  6  256   # consumer_Water21.valve.kvs
+  0       0                  0       0                  6  256   # consumer_Water21.valve.OD_valve
+  0       0                  0       0                  6  256   # consumer_Water21.valve.dp
+ -1       1                  0       0                  1  280   # OD_in9.k
+ -1       0                  0       0                  1  280   # OD_in10.k
+ -1       1                  0       0                  1  280   # OD_out6.k
+ -1       0                  0 1.0000000000000000E+100  1  280   # consumer_Water22.h
+  0       0                  0       0                  6  260   # consumer_Water22.port_a1.p
+  0       0                  0       0                  6  388   # consumer_Water22.port_a1.m_flow
+  0       0                  0       0                  6  260   # consumer_Water22.port_a1.h_outflow
+  0       0                  0       0                  6  388   # consumer_Water22.port_a2.m_flow
+  0       0                  0       0                  6  260   # consumer_Water22.port_a2.h_outflow
+  0       0                  0       0                  6  388   # consumer_Water22.port_b.m_flow
+  0       0                  0       0                  6  260   # consumer_Water22.port_b.h_outflow
+  0       1                  0       0                  6  256   # consumer_Water22.h_tank.k
+ -1       1                  0       0                  1  280   # consumer_Water22.tank_PAir.diameter
+ -1       2                  0 1.0000000000000000E+100  1  280   # consumer_Water22.tank_PAir.fluidLevel_max
+ -1  9.9999999999999995E-07  0 1.0000000000000000E+100  1  280   # consumer_Water22.tank_PAir.fluidLevel_min
+  0       0                  0       0                  6  256   # consumer_Water22.tank_PAir.crossArea
+  0       0                  0       0                  6  256   # consumer_Water22.tank_PAir.volume
+  0       0                  0       0                  6  256   # consumer_Water22.tank_PAir.perimeter
+  0       0                  0 1.0000000000000000E+100  6  256   # consumer_Water22.tank_PAir.fluidLevel_nom
+  0       0                  0       0                  6  256   # consumer_Water22.tank_PAir.E
+  0       0                  0       0                  6  256   # consumer_Water22.tank_PAir.der(E)
+ -1       0                  0 1.0000000000000000E+100  2  272   # consumer_Water22.tank_PAir.fluidLevel
+  0       0                  0       0                  3  256   # consumer_Water22.tank_PAir.der(fluidLevel)
+  0       0                  0       0                  6  256   # consumer_Water22.tank_PAir.dp
+  0       0                  0       0                  6  256   # consumer_Water22.tank_PAir.p0_tank
+  0  1.0465000000000000E+05  0       0                  6  260   # consumer_Water22.tank_PAir.port_a1.h_outflow
+  0  1.0465000000000000E+05  0       0                  6  260   # consumer_Water22.tank_PAir.port_a3.h_outflow
+  0       0                  0       0                  6  260   # consumer_Water22.tank_PAir.port_b.p
+  0       0                  0       0                  6  260   # consumer_Water22.tank_PAir.port_b.h_outflow
+ -1       1                  0       0                  1  280   # consumer_Water22.valve_In1.kv
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # consumer_Water22.valve_In1.OD_min
+  0       0                  0       0                  6  256   # consumer_Water22.valve_In1.kvs
+  0       0                  0       0                  6  256   # consumer_Water22.valve_In1.OD_valve
+  0       0                  0       0                  6  288   # consumer_Water22.valve_In1.dp
+ -1       1                  0       0                  1  280   # consumer_Water22.valve_In2.kv
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # consumer_Water22.valve_In2.OD_min
+  0       0                  0       0                  6  256   # consumer_Water22.valve_In2.kvs
+  0       0                  0       0                  6  256   # consumer_Water22.valve_In2.OD_valve
+  0       0                  0       0                  6  256   # consumer_Water22.valve_In2.dp
+ -1       1                  0       0                  1  280   # consumer_Water22.valve.kv
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # consumer_Water22.valve.OD_min
+  0       0                  0       0                  6  256   # consumer_Water22.valve.kvs
+  0       0                  0       0                  6  256   # consumer_Water22.valve.OD_valve
+  0       0                  0       0                  6  256   # consumer_Water22.valve.dp
+ -1       1                  0       0                  1  280   # OD_in11.k
+ -1       0                  0       0                  1  280   # OD_in12.k
+ -1       1                  0       0                  1  280   # OD_out7.k
+ -1  1.0132500000000000E+05  0       0                  1  280   # sink_pT3.p
+ -1  2.9814999999999998E+02  0 1.0000000000000000E+100  1  280   # sink_pT3.T
+  0       0                  0       0                  6  260   # sink_pT3.port_a.h_outflow
+ -1  1.0132500000000000E+05  0       0                  1  280   # sink_pT4.p
+ -1  2.9814999999999998E+02  0 1.0000000000000000E+100  1  280   # sink_pT4.T
+  0       0                  0       0                  6  260   # sink_pT4.port_a.h_outflow
+ -1       0                  0 1.0000000000000000E+100  1  280   # consumer_Water23.h
+  0       0                  0       0                  6  260   # consumer_Water23.port_a1.p
+  0       0                  0       0                  6  388   # consumer_Water23.port_a1.m_flow
+  0       0                  0       0                  6  260   # consumer_Water23.port_a1.h_outflow
+  0       0                  0       0                  6  388   # consumer_Water23.port_a2.m_flow
+  0       0                  0       0                  6  260   # consumer_Water23.port_a2.h_outflow
+  0       0                  0       0                  6  388   # consumer_Water23.port_b.m_flow
+  0       0                  0       0                  6  260   # consumer_Water23.port_b.h_outflow
+  0       1                  0       0                  6  256   # consumer_Water23.h_tank.k
+ -1       1                  0       0                  1  280   # consumer_Water23.tank_PAir.diameter
+ -1       2                  0 1.0000000000000000E+100  1  280   # consumer_Water23.tank_PAir.fluidLevel_max
+ -1  9.9999999999999995E-07  0 1.0000000000000000E+100  1  280   # consumer_Water23.tank_PAir.fluidLevel_min
+  0       0                  0       0                  6  256   # consumer_Water23.tank_PAir.crossArea
+  0       0                  0       0                  6  256   # consumer_Water23.tank_PAir.volume
+  0       0                  0       0                  6  256   # consumer_Water23.tank_PAir.perimeter
+  0       0                  0 1.0000000000000000E+100  6  256   # consumer_Water23.tank_PAir.fluidLevel_nom
+  0       0                  0       0                  6  256   # consumer_Water23.tank_PAir.E
+  0       0                  0       0                  6  256   # consumer_Water23.tank_PAir.der(E)
+ -1       0                  0 1.0000000000000000E+100  2  272   # consumer_Water23.tank_PAir.fluidLevel
+  0       0                  0       0                  3  256   # consumer_Water23.tank_PAir.der(fluidLevel)
+  0       0                  0       0                  6  256   # consumer_Water23.tank_PAir.dp
+  0       0                  0       0                  6  256   # consumer_Water23.tank_PAir.p0_tank
+  0  1.0465000000000000E+05  0       0                  6  260   # consumer_Water23.tank_PAir.port_a1.h_outflow
+  0  1.0465000000000000E+05  0       0                  6  260   # consumer_Water23.tank_PAir.port_a3.h_outflow
+  0       0                  0       0                  6  260   # consumer_Water23.tank_PAir.port_b.p
+  0       0                  0       0                  6  260   # consumer_Water23.tank_PAir.port_b.h_outflow
+ -1       1                  0       0                  1  280   # consumer_Water23.valve_In1.kv
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # consumer_Water23.valve_In1.OD_min
+  0       0                  0       0                  6  256   # consumer_Water23.valve_In1.kvs
+  0       0                  0       0                  6  256   # consumer_Water23.valve_In1.OD_valve
+  0       0                  0       0                  6  288   # consumer_Water23.valve_In1.dp
+ -1       1                  0       0                  1  280   # consumer_Water23.valve_In2.kv
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # consumer_Water23.valve_In2.OD_min
+  0       0                  0       0                  6  256   # consumer_Water23.valve_In2.kvs
+  0       0                  0       0                  6  256   # consumer_Water23.valve_In2.OD_valve
+  0       0                  0       0                  6  256   # consumer_Water23.valve_In2.dp
+ -1       1                  0       0                  1  280   # consumer_Water23.valve.kv
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # consumer_Water23.valve.OD_min
+  0       0                  0       0                  6  256   # consumer_Water23.valve.kvs
+  0       0                  0       0                  6  256   # consumer_Water23.valve.OD_valve
+  0       0                  0       0                  6  256   # consumer_Water23.valve.dp
+ -1       1                  0       0                  1  280   # OD_in13.k
+ -1       0                  0       0                  1  280   # OD_in14.k
+ -1       1                  0       0                  1  280   # OD_out8.k
+ -1  1.0132500000000000E+05  0       0                  1  280   # sink_pT5.p
+ -1  2.9814999999999998E+02  0 1.0000000000000000E+100  1  280   # sink_pT5.T
+  0       0                  0       0                  6  260   # sink_pT5.port_a.h_outflow
+  0       0                  0       0                  6  256   # pipeC21.D
+  0       0                  0       0                  6  256   # pipeC21.L
+ -1       4                  0       0                  1  280   # pipeC21.n1
+ -1       4                  0       0                  1  280   # pipeC21.n2
+  0       0                  0       0                  6  260   # pipeC21.Pipe_Heat21.port_b.p
+  0  2.8814999999999998E+02  0 1.0000000000000000E+100  6  260   # pipeC21.Pipe_Heat21.heatport_a.T
+  0       0                  0       0                  6  388   # pipeC21.Pipe_Heat21.heatport_a.Q_flow
+  0       0                  0       0                  6  256   # pipeC21.Pipe_Heat21.length
+  0       0                  0       0                  6  256   # pipeC21.Pipe_Heat21.diameter
+  0       0                  0       0                  6  256   # pipeC21.Pipe_Heat21.crossArea
+  0       0                  0       0                  6  256   # pipeC21.Pipe_Heat21.perimeter
+ -1  5.0000000000000002E-05  0 1.0000000000000000E+100  1  280   # pipeC21.Pipe_Heat21.roughness
+ -1       0                  0       0                  1  280   # pipeC21.Pipe_Heat21.k_m
+  0       0                  0       0                  6  256   # pipeC21.Pipe_Heat21.V
+ -1       0                  0       0                  1  280   # pipeC21.Pipe_Heat21.height_ab
+ -1  2.9314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeC21.Pipe_Heat21.T_start
+  0       0                  0       0                  6  256   # pipeC21.Pipe_Heat21.U_start
+  0       0                  0       0                  6  256   # pipeC21.Pipe_Heat21.f
+  0       0                  0       0                  6  256   # pipeC21.Pipe_Heat21.h_f
+  0       0                  0       0                  6  256   # pipeC21.Pipe_Heat21.h_m
+  0       0                  0       0                  6  256   # pipeC21.Pipe_Heat21.dp
+  0  1.0000000000000000E-03  0       0                  6  256   # pipeC21.Pipe_Heat21.V_flow
+  0       0                  0       0                  6  256   # pipeC21.Pipe_Heat21.der(V_flow)
+ -1       0                  0 1.0000000000000000E+100  2  272   # pipeC21.Pipe_Heat21.T
+  0       0                  0       0                  3  256   # pipeC21.Pipe_Heat21.der(T)
+  0       0                  0       0                  6  260   # pipeC21.Pipe_Heat11.port_b.p
+  0  2.8814999999999998E+02  0 1.0000000000000000E+100  6  260   # pipeC21.Pipe_Heat11.heatport_a.T
+  0       0                  0       0                  6  388   # pipeC21.Pipe_Heat11.heatport_a.Q_flow
+  0       0                  0       0                  6  256   # pipeC21.Pipe_Heat11.length
+  0       0                  0       0                  6  256   # pipeC21.Pipe_Heat11.diameter
+  0       0                  0       0                  6  256   # pipeC21.Pipe_Heat11.crossArea
+  0       0                  0       0                  6  256   # pipeC21.Pipe_Heat11.perimeter
+ -1  5.0000000000000002E-05  0 1.0000000000000000E+100  1  280   # pipeC21.Pipe_Heat11.roughness
+ -1       0                  0       0                  1  280   # pipeC21.Pipe_Heat11.k_m
+  0       0                  0       0                  6  256   # pipeC21.Pipe_Heat11.V
+ -1       0                  0       0                  1  280   # pipeC21.Pipe_Heat11.height_ab
+ -1  2.9314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeC21.Pipe_Heat11.T_start
+  0       0                  0       0                  6  256   # pipeC21.Pipe_Heat11.U_start
+  0       0                  0       0                  6  256   # pipeC21.Pipe_Heat11.f
+  0       0                  0       0                  6  256   # pipeC21.Pipe_Heat11.h_f
+  0       0                  0       0                  6  256   # pipeC21.Pipe_Heat11.h_m
+  0       0                  0       0                  6  256   # pipeC21.Pipe_Heat11.dp
+ -1  1.0000000000000000E-03  0       0                  2  280   # pipeC21.Pipe_Heat11.V_flow
+  0       0                  0       0                  3  256   # pipeC21.Pipe_Heat11.der(V_flow)
+ -1       0                  0 1.0000000000000000E+100  2  272   # pipeC21.Pipe_Heat11.T
+  0       0                  0       0                  3  256   # pipeC21.Pipe_Heat11.der(T)
+ -1   -1800                  0       0                  1  280   # pipeC21.fixedHeatFlow1.Q_flow
+ -1  2.7314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeC21.fixedHeatFlow1.T_ref
+ -1       1                  0       0                  1  280   # pipeC21.fixedHeatFlow1.alpha
+ -1   -1800                  0       0                  1  280   # pipeC21.fixedHeatFlow2.Q_flow
+ -1  2.7314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeC21.fixedHeatFlow2.T_ref
+ -1       1                  0       0                  1  280   # pipeC21.fixedHeatFlow2.alpha
+  0       0                  0       0                  6  260   # pipeC21.port_a1.p
+  0       0                  0       0                  6  388   # pipeC21.port_a1.m_flow
+  0       0                  0       0                  6  260   # pipeC21.port_a1.der(m_flow)
+  0       0                  0       0                  6  260   # pipeC21.port_a1.h_outflow
+  0       0                  0       0                  6  260   # pipeC21.port_a2.p
+  0       0                  0       0                  6  260   # pipeC21.port_a2.h_outflow
+  0       0                  0       0                  6  260   # pipeC21.port_b1.h_outflow
+  0       0                  0       0                  6  260   # pipeC21.port_b2.h_outflow
+ -1       1                  0       0                  1  280   # pipeC21.Sel_Valve1.OD_nominal
+ -1  100000                  0       0                  1  280   # pipeC21.Sel_Valve1.dp_nominal
+ -1  2.7777777777777779E-01  0       0                  1  280   # pipeC21.Sel_Valve1.m_flow_nominal
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # pipeC21.Sel_Valve1.opening_min
+  0       0                  0       0                  6  256   # pipeC21.Sel_Valve1.k
+  0       0                  0       0                  6  256   # pipeC21.Sel_Valve1.dp
+  0       0                  0       0                  6  256   # pipeC21.Sel_Valve1.OD_valve
+ -1       1                  0       0                  1  280   # pipeC21.OD_Select1.k
+ -1       1                  0       0                  1  280   # pipeC21.Sel_Valve2.OD_nominal
+ -1  100000                  0       0                  1  280   # pipeC21.Sel_Valve2.dp_nominal
+ -1  2.7777777777777779E-01  0       0                  1  280   # pipeC21.Sel_Valve2.m_flow_nominal
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # pipeC21.Sel_Valve2.opening_min
+  0       0                  0       0                  6  256   # pipeC21.Sel_Valve2.k
+  0       0                  0       0                  6  256   # pipeC21.Sel_Valve2.dp
+  0       0                  0       0                  6  256   # pipeC21.Sel_Valve2.OD_valve
+ -1       1                  0       0                  1  280   # pipeC21.OD_Select2.k
+  0       0                  0       0                  6  256   # pipeC22.D
+  0       0                  0       0                  6  256   # pipeC22.L
+ -1       4                  0       0                  1  280   # pipeC22.n1
+ -1       4                  0       0                  1  280   # pipeC22.n2
+  0       0                  0       0                  6  260   # pipeC22.Pipe_Heat21.port_b.p
+  0  2.8814999999999998E+02  0 1.0000000000000000E+100  6  260   # pipeC22.Pipe_Heat21.heatport_a.T
+  0       0                  0       0                  6  388   # pipeC22.Pipe_Heat21.heatport_a.Q_flow
+  0       0                  0       0                  6  256   # pipeC22.Pipe_Heat21.length
+  0       0                  0       0                  6  256   # pipeC22.Pipe_Heat21.diameter
+  0       0                  0       0                  6  256   # pipeC22.Pipe_Heat21.crossArea
+  0       0                  0       0                  6  256   # pipeC22.Pipe_Heat21.perimeter
+ -1  5.0000000000000002E-05  0 1.0000000000000000E+100  1  280   # pipeC22.Pipe_Heat21.roughness
+ -1       0                  0       0                  1  280   # pipeC22.Pipe_Heat21.k_m
+  0       0                  0       0                  6  256   # pipeC22.Pipe_Heat21.V
+ -1       0                  0       0                  1  280   # pipeC22.Pipe_Heat21.height_ab
+ -1  2.9314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeC22.Pipe_Heat21.T_start
+  0       0                  0       0                  6  256   # pipeC22.Pipe_Heat21.U_start
+  0       0                  0       0                  6  256   # pipeC22.Pipe_Heat21.f
+  0       0                  0       0                  6  256   # pipeC22.Pipe_Heat21.h_f
+  0       0                  0       0                  6  256   # pipeC22.Pipe_Heat21.h_m
+  0       0                  0       0                  6  256   # pipeC22.Pipe_Heat21.dp
+  0  1.0000000000000000E-03  0       0                  6  256   # pipeC22.Pipe_Heat21.V_flow
+  0       0                  0       0                  6  256   # pipeC22.Pipe_Heat21.der(V_flow)
+ -1       0                  0 1.0000000000000000E+100  2  272   # pipeC22.Pipe_Heat21.T
+  0       0                  0       0                  3  256   # pipeC22.Pipe_Heat21.der(T)
+  0       0                  0       0                  6  260   # pipeC22.Pipe_Heat11.port_b.p
+  0  2.8814999999999998E+02  0 1.0000000000000000E+100  6  260   # pipeC22.Pipe_Heat11.heatport_a.T
+  0       0                  0       0                  6  388   # pipeC22.Pipe_Heat11.heatport_a.Q_flow
+  0       0                  0       0                  6  256   # pipeC22.Pipe_Heat11.length
+  0       0                  0       0                  6  256   # pipeC22.Pipe_Heat11.diameter
+  0       0                  0       0                  6  256   # pipeC22.Pipe_Heat11.crossArea
+  0       0                  0       0                  6  256   # pipeC22.Pipe_Heat11.perimeter
+ -1  5.0000000000000002E-05  0 1.0000000000000000E+100  1  280   # pipeC22.Pipe_Heat11.roughness
+ -1       0                  0       0                  1  280   # pipeC22.Pipe_Heat11.k_m
+  0       0                  0       0                  6  256   # pipeC22.Pipe_Heat11.V
+ -1       0                  0       0                  1  280   # pipeC22.Pipe_Heat11.height_ab
+ -1  2.9314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeC22.Pipe_Heat11.T_start
+  0       0                  0       0                  6  256   # pipeC22.Pipe_Heat11.U_start
+  0       0                  0       0                  6  256   # pipeC22.Pipe_Heat11.f
+  0       0                  0       0                  6  256   # pipeC22.Pipe_Heat11.h_f
+  0       0                  0       0                  6  256   # pipeC22.Pipe_Heat11.h_m
+  0       0                  0       0                  6  256   # pipeC22.Pipe_Heat11.dp
+ -1  1.0000000000000000E-03  0       0                  2  280   # pipeC22.Pipe_Heat11.V_flow
+  0       0                  0       0                  3  256   # pipeC22.Pipe_Heat11.der(V_flow)
+ -1       0                  0 1.0000000000000000E+100  2  272   # pipeC22.Pipe_Heat11.T
+  0       0                  0       0                  3  256   # pipeC22.Pipe_Heat11.der(T)
+ -1   -1800                  0       0                  1  280   # pipeC22.fixedHeatFlow1.Q_flow
+ -1  2.7314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeC22.fixedHeatFlow1.T_ref
+ -1       1                  0       0                  1  280   # pipeC22.fixedHeatFlow1.alpha
+ -1   -1800                  0       0                  1  280   # pipeC22.fixedHeatFlow2.Q_flow
+ -1  2.7314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeC22.fixedHeatFlow2.T_ref
+ -1       1                  0       0                  1  280   # pipeC22.fixedHeatFlow2.alpha
+  0       0                  0       0                  6  260   # pipeC22.port_a1.p
+  0       0                  0       0                  6  388   # pipeC22.port_a1.m_flow
+  0       0                  0       0                  6  260   # pipeC22.port_a1.der(m_flow)
+  0       0                  0       0                  6  260   # pipeC22.port_a1.h_outflow
+  0       0                  0       0                  6  260   # pipeC22.port_a2.p
+  0       0                  0       0                  6  260   # pipeC22.port_a2.h_outflow
+  0       0                  0       0                  6  260   # pipeC22.port_b1.h_outflow
+  0       0                  0       0                  6  260   # pipeC22.port_b2.h_outflow
+ -1       1                  0       0                  1  280   # pipeC22.Sel_Valve1.OD_nominal
+ -1  100000                  0       0                  1  280   # pipeC22.Sel_Valve1.dp_nominal
+ -1  2.7777777777777779E-01  0       0                  1  280   # pipeC22.Sel_Valve1.m_flow_nominal
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # pipeC22.Sel_Valve1.opening_min
+  0       0                  0       0                  6  256   # pipeC22.Sel_Valve1.k
+  0       0                  0       0                  6  256   # pipeC22.Sel_Valve1.dp
+  0       0                  0       0                  6  256   # pipeC22.Sel_Valve1.OD_valve
+ -1       1                  0       0                  1  280   # pipeC22.OD_Select1.k
+ -1       1                  0       0                  1  280   # pipeC22.Sel_Valve2.OD_nominal
+ -1  100000                  0       0                  1  280   # pipeC22.Sel_Valve2.dp_nominal
+ -1  2.7777777777777779E-01  0       0                  1  280   # pipeC22.Sel_Valve2.m_flow_nominal
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # pipeC22.Sel_Valve2.opening_min
+  0       0                  0       0                  6  256   # pipeC22.Sel_Valve2.k
+  0       0                  0       0                  6  256   # pipeC22.Sel_Valve2.dp
+  0       0                  0       0                  6  256   # pipeC22.Sel_Valve2.OD_valve
+ -1       1                  0       0                  1  280   # pipeC22.OD_Select2.k
+  0       0                  0       0                  6  256   # pipeA21.D
+  0       0                  0       0                  6  256   # pipeA21.L
+ -1       4                  0       0                  1  280   # pipeA21.n1
+ -1       4                  0       0                  1  280   # pipeA21.n2
+  0       0                  0       0                  6  260   # pipeA21.Pipe_Heat21.port_b.p
+  0  2.8814999999999998E+02  0 1.0000000000000000E+100  6  260   # pipeA21.Pipe_Heat21.heatport_a.T
+  0       0                  0       0                  6  388   # pipeA21.Pipe_Heat21.heatport_a.Q_flow
+  0       0                  0       0                  6  256   # pipeA21.Pipe_Heat21.length
+  0       0                  0       0                  6  256   # pipeA21.Pipe_Heat21.diameter
+  0       0                  0       0                  6  256   # pipeA21.Pipe_Heat21.crossArea
+  0       0                  0       0                  6  256   # pipeA21.Pipe_Heat21.perimeter
+ -1  5.0000000000000002E-05  0 1.0000000000000000E+100  1  280   # pipeA21.Pipe_Heat21.roughness
+ -1       0                  0       0                  1  280   # pipeA21.Pipe_Heat21.k_m
+  0       0                  0       0                  6  256   # pipeA21.Pipe_Heat21.V
+ -1       0                  0       0                  1  280   # pipeA21.Pipe_Heat21.height_ab
+ -1  2.9314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeA21.Pipe_Heat21.T_start
+  0       0                  0       0                  6  256   # pipeA21.Pipe_Heat21.U_start
+  0       0                  0       0                  6  256   # pipeA21.Pipe_Heat21.f
+  0       0                  0       0                  6  256   # pipeA21.Pipe_Heat21.h_f
+  0       0                  0       0                  6  256   # pipeA21.Pipe_Heat21.h_m
+  0       0                  0       0                  6  256   # pipeA21.Pipe_Heat21.dp
+  0  1.0000000000000000E-03  0       0                  6  256   # pipeA21.Pipe_Heat21.V_flow
+  0       0                  0       0                  6  256   # pipeA21.Pipe_Heat21.der(V_flow)
+ -1       0                  0 1.0000000000000000E+100  2  272   # pipeA21.Pipe_Heat21.T
+  0       0                  0       0                  3  256   # pipeA21.Pipe_Heat21.der(T)
+  0       0                  0       0                  6  260   # pipeA21.Pipe_Heat11.port_b.p
+  0  2.8814999999999998E+02  0 1.0000000000000000E+100  6  260   # pipeA21.Pipe_Heat11.heatport_a.T
+  0       0                  0       0                  6  388   # pipeA21.Pipe_Heat11.heatport_a.Q_flow
+  0       0                  0       0                  6  256   # pipeA21.Pipe_Heat11.length
+  0       0                  0       0                  6  256   # pipeA21.Pipe_Heat11.diameter
+  0       0                  0       0                  6  256   # pipeA21.Pipe_Heat11.crossArea
+  0       0                  0       0                  6  256   # pipeA21.Pipe_Heat11.perimeter
+ -1  5.0000000000000002E-05  0 1.0000000000000000E+100  1  280   # pipeA21.Pipe_Heat11.roughness
+ -1       0                  0       0                  1  280   # pipeA21.Pipe_Heat11.k_m
+  0       0                  0       0                  6  256   # pipeA21.Pipe_Heat11.V
+ -1       0                  0       0                  1  280   # pipeA21.Pipe_Heat11.height_ab
+ -1  2.9314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeA21.Pipe_Heat11.T_start
+  0       0                  0       0                  6  256   # pipeA21.Pipe_Heat11.U_start
+  0       0                  0       0                  6  256   # pipeA21.Pipe_Heat11.f
+  0       0                  0       0                  6  256   # pipeA21.Pipe_Heat11.h_f
+  0       0                  0       0                  6  256   # pipeA21.Pipe_Heat11.h_m
+  0       0                  0       0                  6  256   # pipeA21.Pipe_Heat11.dp
+  0  1.0000000000000000E-03  0       0                  6  256   # pipeA21.Pipe_Heat11.V_flow
+  0       0                  0       0                  6  256   # pipeA21.Pipe_Heat11.der(V_flow)
+ -1       0                  0 1.0000000000000000E+100  2  272   # pipeA21.Pipe_Heat11.T
+  0       0                  0       0                  3  256   # pipeA21.Pipe_Heat11.der(T)
+ -1   -1800                  0       0                  1  280   # pipeA21.fixedHeatFlow1.Q_flow
+ -1  2.7314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeA21.fixedHeatFlow1.T_ref
+ -1       1                  0       0                  1  280   # pipeA21.fixedHeatFlow1.alpha
+ -1   -1800                  0       0                  1  280   # pipeA21.fixedHeatFlow2.Q_flow
+ -1  2.7314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeA21.fixedHeatFlow2.T_ref
+ -1       1                  0       0                  1  280   # pipeA21.fixedHeatFlow2.alpha
+  0       0                  0       0                  6  260   # pipeA21.port_a1.h_outflow
+  0       0                  0       0                  6  260   # pipeA21.port_a2.p
+  0       0                  0       0                  6  260   # pipeA21.port_a2.h_outflow
+  0       0                  0       0                  6  260   # pipeA21.port_b1.h_outflow
+  0       0                  0       0                  6  260   # pipeA21.port_b2.h_outflow
+ -1       1                  0       0                  1  280   # pipeA21.Sel_Valve1.OD_nominal
+ -1  100000                  0       0                  1  280   # pipeA21.Sel_Valve1.dp_nominal
+ -1  2.7777777777777779E-01  0       0                  1  280   # pipeA21.Sel_Valve1.m_flow_nominal
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # pipeA21.Sel_Valve1.opening_min
+  0       0                  0       0                  6  256   # pipeA21.Sel_Valve1.k
+  0       0                  0       0                  6  256   # pipeA21.Sel_Valve1.dp
+  0       0                  0       0                  6  256   # pipeA21.Sel_Valve1.OD_valve
+ -1       1                  0       0                  1  280   # pipeA21.OD_Select1.k
+ -1       1                  0       0                  1  280   # pipeA21.Sel_Valve2.OD_nominal
+ -1  100000                  0       0                  1  280   # pipeA21.Sel_Valve2.dp_nominal
+ -1  2.7777777777777779E-01  0       0                  1  280   # pipeA21.Sel_Valve2.m_flow_nominal
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # pipeA21.Sel_Valve2.opening_min
+  0       0                  0       0                  6  256   # pipeA21.Sel_Valve2.k
+  0       0                  0       0                  6  256   # pipeA21.Sel_Valve2.dp
+  0       0                  0       0                  6  256   # pipeA21.Sel_Valve2.OD_valve
+ -1       1                  0       0                  1  280   # pipeA21.OD_Select2.k
+  0       0                  0       0                  6  256   # pipeA22.D
+  0       0                  0       0                  6  256   # pipeA22.L
+ -1       4                  0       0                  1  280   # pipeA22.n1
+ -1       4                  0       0                  1  280   # pipeA22.n2
+  0       0                  0       0                  6  260   # pipeA22.Pipe_Heat21.port_b.p
+  0  2.8814999999999998E+02  0 1.0000000000000000E+100  6  260   # pipeA22.Pipe_Heat21.heatport_a.T
+  0       0                  0       0                  6  388   # pipeA22.Pipe_Heat21.heatport_a.Q_flow
+  0       0                  0       0                  6  256   # pipeA22.Pipe_Heat21.length
+  0       0                  0       0                  6  256   # pipeA22.Pipe_Heat21.diameter
+  0       0                  0       0                  6  256   # pipeA22.Pipe_Heat21.crossArea
+  0       0                  0       0                  6  256   # pipeA22.Pipe_Heat21.perimeter
+ -1  5.0000000000000002E-05  0 1.0000000000000000E+100  1  280   # pipeA22.Pipe_Heat21.roughness
+ -1       0                  0       0                  1  280   # pipeA22.Pipe_Heat21.k_m
+  0       0                  0       0                  6  256   # pipeA22.Pipe_Heat21.V
+ -1       0                  0       0                  1  280   # pipeA22.Pipe_Heat21.height_ab
+ -1  2.9314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeA22.Pipe_Heat21.T_start
+  0       0                  0       0                  6  256   # pipeA22.Pipe_Heat21.U_start
+  0       0                  0       0                  6  256   # pipeA22.Pipe_Heat21.f
+  0       0                  0       0                  6  256   # pipeA22.Pipe_Heat21.h_f
+  0       0                  0       0                  6  256   # pipeA22.Pipe_Heat21.h_m
+  0       0                  0       0                  6  256   # pipeA22.Pipe_Heat21.dp
+  0  1.0000000000000000E-03  0       0                  6  256   # pipeA22.Pipe_Heat21.V_flow
+  0       0                  0       0                  6  256   # pipeA22.Pipe_Heat21.der(V_flow)
+ -1       0                  0 1.0000000000000000E+100  2  272   # pipeA22.Pipe_Heat21.T
+  0       0                  0       0                  3  256   # pipeA22.Pipe_Heat21.der(T)
+  0       0                  0       0                  6  260   # pipeA22.Pipe_Heat11.port_b.p
+  0  2.8814999999999998E+02  0 1.0000000000000000E+100  6  260   # pipeA22.Pipe_Heat11.heatport_a.T
+  0       0                  0       0                  6  388   # pipeA22.Pipe_Heat11.heatport_a.Q_flow
+  0       0                  0       0                  6  256   # pipeA22.Pipe_Heat11.length
+  0       0                  0       0                  6  256   # pipeA22.Pipe_Heat11.diameter
+  0       0                  0       0                  6  256   # pipeA22.Pipe_Heat11.crossArea
+  0       0                  0       0                  6  256   # pipeA22.Pipe_Heat11.perimeter
+ -1  5.0000000000000002E-05  0 1.0000000000000000E+100  1  280   # pipeA22.Pipe_Heat11.roughness
+ -1       0                  0       0                  1  280   # pipeA22.Pipe_Heat11.k_m
+  0       0                  0       0                  6  256   # pipeA22.Pipe_Heat11.V
+ -1       0                  0       0                  1  280   # pipeA22.Pipe_Heat11.height_ab
+ -1  2.9314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeA22.Pipe_Heat11.T_start
+  0       0                  0       0                  6  256   # pipeA22.Pipe_Heat11.U_start
+  0       0                  0       0                  6  256   # pipeA22.Pipe_Heat11.f
+  0       0                  0       0                  6  256   # pipeA22.Pipe_Heat11.h_f
+  0       0                  0       0                  6  256   # pipeA22.Pipe_Heat11.h_m
+  0       0                  0       0                  6  256   # pipeA22.Pipe_Heat11.dp
+ -1  1.0000000000000000E-03  0       0                  2  280   # pipeA22.Pipe_Heat11.V_flow
+  0       0                  0       0                  3  256   # pipeA22.Pipe_Heat11.der(V_flow)
+ -1       0                  0 1.0000000000000000E+100  2  272   # pipeA22.Pipe_Heat11.T
+  0       0                  0       0                  3  256   # pipeA22.Pipe_Heat11.der(T)
+ -1   -1800                  0       0                  1  280   # pipeA22.fixedHeatFlow1.Q_flow
+ -1  2.7314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeA22.fixedHeatFlow1.T_ref
+ -1       1                  0       0                  1  280   # pipeA22.fixedHeatFlow1.alpha
+ -1   -1800                  0       0                  1  280   # pipeA22.fixedHeatFlow2.Q_flow
+ -1  2.7314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeA22.fixedHeatFlow2.T_ref
+ -1       1                  0       0                  1  280   # pipeA22.fixedHeatFlow2.alpha
+  0       0                  0       0                  6  388   # pipeA22.port_a1.m_flow
+  0       0                  0       0                  6  260   # pipeA22.port_a1.der(m_flow)
+  0       0                  0       0                  6  260   # pipeA22.port_a1.h_outflow
+  0       0                  0       0                  6  388   # pipeA22.port_a2.m_flow
+  0       0                  0       0                  6  260   # pipeA22.port_a2.der(m_flow)
+  0       0                  0       0                  6  260   # pipeA22.port_a2.h_outflow
+  0       0                  0       0                  6  260   # pipeA22.port_b1.h_outflow
+  0       0                  0       0                  6  260   # pipeA22.port_b2.p
+  0       0                  0       0                  6  260   # pipeA22.port_b2.h_outflow
+ -1       1                  0       0                  1  280   # pipeA22.Sel_Valve1.OD_nominal
+ -1  100000                  0       0                  1  280   # pipeA22.Sel_Valve1.dp_nominal
+ -1  2.7777777777777779E-01  0       0                  1  280   # pipeA22.Sel_Valve1.m_flow_nominal
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # pipeA22.Sel_Valve1.opening_min
+  0       0                  0       0                  6  256   # pipeA22.Sel_Valve1.k
+  0       0                  0       0                  6  256   # pipeA22.Sel_Valve1.dp
+  0       0                  0       0                  6  256   # pipeA22.Sel_Valve1.OD_valve
+ -1       1                  0       0                  1  280   # pipeA22.OD_Select1.k
+ -1       1                  0       0                  1  280   # pipeA22.Sel_Valve2.OD_nominal
+ -1  100000                  0       0                  1  280   # pipeA22.Sel_Valve2.dp_nominal
+ -1  2.7777777777777779E-01  0       0                  1  280   # pipeA22.Sel_Valve2.m_flow_nominal
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # pipeA22.Sel_Valve2.opening_min
+  0       0                  0       0                  6  256   # pipeA22.Sel_Valve2.k
+  0       0                  0       0                  6  256   # pipeA22.Sel_Valve2.dp
+  0       0                  0       0                  6  256   # pipeA22.Sel_Valve2.OD_valve
+ -1       1                  0       0                  1  280   # pipeA22.OD_Select2.k
+  0       0                  0       0                  6  256   # pipeC23.D
+  0       0                  0       0                  6  256   # pipeC23.L
+ -1       4                  0       0                  1  280   # pipeC23.n1
+ -1       4                  0       0                  1  280   # pipeC23.n2
+  0       0                  0       0                  6  260   # pipeC23.Pipe_Heat21.port_b.p
+  0  2.8814999999999998E+02  0 1.0000000000000000E+100  6  260   # pipeC23.Pipe_Heat21.heatport_a.T
+  0       0                  0       0                  6  388   # pipeC23.Pipe_Heat21.heatport_a.Q_flow
+  0       0                  0       0                  6  256   # pipeC23.Pipe_Heat21.length
+  0       0                  0       0                  6  256   # pipeC23.Pipe_Heat21.diameter
+  0       0                  0       0                  6  256   # pipeC23.Pipe_Heat21.crossArea
+  0       0                  0       0                  6  256   # pipeC23.Pipe_Heat21.perimeter
+ -1  5.0000000000000002E-05  0 1.0000000000000000E+100  1  280   # pipeC23.Pipe_Heat21.roughness
+ -1       0                  0       0                  1  280   # pipeC23.Pipe_Heat21.k_m
+  0       0                  0       0                  6  256   # pipeC23.Pipe_Heat21.V
+ -1       0                  0       0                  1  280   # pipeC23.Pipe_Heat21.height_ab
+ -1  2.9314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeC23.Pipe_Heat21.T_start
+  0       0                  0       0                  6  256   # pipeC23.Pipe_Heat21.U_start
+  0       0                  0       0                  6  256   # pipeC23.Pipe_Heat21.f
+  0       0                  0       0                  6  256   # pipeC23.Pipe_Heat21.h_f
+  0       0                  0       0                  6  256   # pipeC23.Pipe_Heat21.h_m
+  0       0                  0       0                  6  256   # pipeC23.Pipe_Heat21.dp
+  0  1.0000000000000000E-03  0       0                  6  256   # pipeC23.Pipe_Heat21.V_flow
+  0       0                  0       0                  6  256   # pipeC23.Pipe_Heat21.der(V_flow)
+ -1       0                  0 1.0000000000000000E+100  2  272   # pipeC23.Pipe_Heat21.T
+  0       0                  0       0                  3  256   # pipeC23.Pipe_Heat21.der(T)
+  0       0                  0       0                  6  260   # pipeC23.Pipe_Heat11.port_b.p
+  0  2.8814999999999998E+02  0 1.0000000000000000E+100  6  260   # pipeC23.Pipe_Heat11.heatport_a.T
+  0       0                  0       0                  6  388   # pipeC23.Pipe_Heat11.heatport_a.Q_flow
+  0       0                  0       0                  6  256   # pipeC23.Pipe_Heat11.length
+  0       0                  0       0                  6  256   # pipeC23.Pipe_Heat11.diameter
+  0       0                  0       0                  6  256   # pipeC23.Pipe_Heat11.crossArea
+  0       0                  0       0                  6  256   # pipeC23.Pipe_Heat11.perimeter
+ -1  5.0000000000000002E-05  0 1.0000000000000000E+100  1  280   # pipeC23.Pipe_Heat11.roughness
+ -1       0                  0       0                  1  280   # pipeC23.Pipe_Heat11.k_m
+  0       0                  0       0                  6  256   # pipeC23.Pipe_Heat11.V
+ -1       0                  0       0                  1  280   # pipeC23.Pipe_Heat11.height_ab
+ -1  2.9314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeC23.Pipe_Heat11.T_start
+  0       0                  0       0                  6  256   # pipeC23.Pipe_Heat11.U_start
+  0       0                  0       0                  6  256   # pipeC23.Pipe_Heat11.f
+  0       0                  0       0                  6  256   # pipeC23.Pipe_Heat11.h_f
+  0       0                  0       0                  6  256   # pipeC23.Pipe_Heat11.h_m
+  0       0                  0       0                  6  256   # pipeC23.Pipe_Heat11.dp
+  0  1.0000000000000000E-03  0       0                  6  256   # pipeC23.Pipe_Heat11.V_flow
+  0       0                  0       0                  6  256   # pipeC23.Pipe_Heat11.der(V_flow)
+ -1       0                  0 1.0000000000000000E+100  2  272   # pipeC23.Pipe_Heat11.T
+  0       0                  0       0                  3  256   # pipeC23.Pipe_Heat11.der(T)
+ -1   -1800                  0       0                  1  280   # pipeC23.fixedHeatFlow1.Q_flow
+ -1  2.7314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeC23.fixedHeatFlow1.T_ref
+ -1       1                  0       0                  1  280   # pipeC23.fixedHeatFlow1.alpha
+ -1   -1800                  0       0                  1  280   # pipeC23.fixedHeatFlow2.Q_flow
+ -1  2.7314999999999998E+02  0 1.0000000000000000E+100  1  280   # pipeC23.fixedHeatFlow2.T_ref
+ -1       1                  0       0                  1  280   # pipeC23.fixedHeatFlow2.alpha
+  0       0                  0       0                  6  260   # pipeC23.port_a1.h_outflow
+  0       0                  0       0                  6  260   # pipeC23.port_a2.p
+  0       0                  0       0                  6  260   # pipeC23.port_a2.h_outflow
+  0       0                  0       0                  6  260   # pipeC23.port_b1.h_outflow
+  0       0                  0       0                  6  260   # pipeC23.port_b2.h_outflow
+ -1       1                  0       0                  1  280   # pipeC23.Sel_Valve1.OD_nominal
+ -1  100000                  0       0                  1  280   # pipeC23.Sel_Valve1.dp_nominal
+ -1  2.7777777777777779E-01  0       0                  1  280   # pipeC23.Sel_Valve1.m_flow_nominal
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # pipeC23.Sel_Valve1.opening_min
+  0       0                  0       0                  6  256   # pipeC23.Sel_Valve1.k
+  0       0                  0       0                  6  256   # pipeC23.Sel_Valve1.dp
+  0       0                  0       0                  6  256   # pipeC23.Sel_Valve1.OD_valve
+ -1       1                  0       0                  1  280   # pipeC23.OD_Select1.k
+ -1       1                  0       0                  1  280   # pipeC23.Sel_Valve2.OD_nominal
+ -1  100000                  0       0                  1  280   # pipeC23.Sel_Valve2.dp_nominal
+ -1  2.7777777777777779E-01  0       0                  1  280   # pipeC23.Sel_Valve2.m_flow_nominal
+ -1  9.9999999999999998E-13  0 1.0000000000000000E+100  1  280   # pipeC23.Sel_Valve2.opening_min
+  0       0                  0       0                  6  256   # pipeC23.Sel_Valve2.k
+  0       0                  0       0                  6  256   # pipeC23.Sel_Valve2.dp
+  0       0                  0       0                  6  256   # pipeC23.Sel_Valve2.OD_valve
+ -1       1                  0       0                  1  280   # pipeC23.OD_Select2.k
+
+
+# Matrix with 6 columns defining the initial value calculation
+# (columns 5 and 6 are not utilized for the calculation but are
+#  reported by dymosim via dymosim -i for user convenience):
+#
+# column 1: Type of initial value
+#           = -2: special case: for continuing simulation (column 2 = value)
+#           = -1: fixed value (column 2 = fixed value)
+#           =  0: free value, i.e., no restriction (column 2 = initial value)
+#           >  0: desired value (column 1 = weight for optimization
+#                                column 2 = desired value)
+#                 use weight=1, since automatic scaling usually
+#                 leads to equally weighted terms
+# column 2: fixed, free or desired value according to column 1.
+# column 3: Minimum value (ignored, if Minimum >= Maximum).
+# column 4: Maximum value (ignored, if Minimum >= Maximum).
+#           Minimum and maximum restrict the search range in initial
+#           value calculation. They might also be used for scaling.
+# column 5: Category of variable.
+#           = 1: parameter.
+#           = 2: state.
+#           = 3: state derivative.
+#           = 4: output.
+#           = 5: input.
+#           = 6: auxiliary variable.
+# column 6: Data type of variable and flags according to dsBaseType
+#  <value>&3= 0: real.
+#  <value>&3= 1: boolean.
+#  <value>&3= 2: integer.
+#
+# Initial values are calculated according to the following procedure:
+#
+# - If parameters, states and inputs are FIXED, and other variables
+#   are FREE, no special action takes place (default setting).
+#
+# - If there are only FIXED and FREE variables and the number of
+#   FREE parameters, states and inputs is IDENTICAL to the number of
+#   FIXED state derivatives, outputs and auxiliary variables, a non-linear
+#   equation is solved to determine a consistent set of initial conditions.
+#
+# - In all other cases the following optimization problem is solved:
+#      min( sum( weight(i)*( (value(i) - DESIRED(i))/scale(i) )^2 ) )
+#   under the constraint that the differential equation is fulfilled
+#   at the initial time. In most cases weight(i)=1 is sufficient, due
+#   to the automatic scaling (if DESIRED(i) is not close to zero,
+#   scale(i) = DESIRED(i). Otherwise, the scaling is based on the
+#   nominal value (and maybe minimum and maximum values given in 
+#   column 3 and 4). If these values are zero, scale(i)=1 is used).
+#
+char initialDescription(1082,105)
+[kg/s]
+[K|degC]
+Pressure at the connector [Pa|bar]
+Enthalpy of fluid [J/kg]
+Pipe diameter [m]
+Maximum height of the tank [m]
+Maximum height of the tank [m]
+Inner cross section area [m2]
+Inner perimeter [m]
+[m]
+Accumulated potential energy [J]
+der(Accumulated potential energy) [W]
+[m]
+[m/s]
+[Pa|bar]
+Pressure at the connector [Pa|bar]
+Enthalpy of fluid [J/kg]
+Pressure at the connector [Pa|bar]
+Mass flow of fluid [kg/s]
+Enthalpy of fluid [J/kg]
+Enthalpy of fluid [J/kg]
+Pressure at the connector [Pa|bar]
+Mass flow of fluid [kg/s]
+der(Mass flow of fluid) [kg/s2]
+Enthalpy of fluid [J/kg]
+Mass flow of fluid [kg/s]
+Enthalpy of fluid [J/kg]
+Pressure at the connector [Pa|bar]
+Constant q*q
+Constant omega*q
+Constant omega*omega
+[m3/s|m3/h]
+[m]
+[Pa|bar]
+volumetric flow [m3/s|m3/h]
+Mass flow of fluid [kg/s]
+Enthalpy of fluid [J/kg]
+Constant q*q
+Constant omega*q
+Constant omega*omega
+[m3/s|m3/h]
+[m]
+[Pa|bar]
+volumetric flow [m3/s|m3/h]
+Constant output value
+Opening Degree of Output Valve 2
+Hydraulic conductance at nominal opening [m3/h] []
+Remaining opening if closed, causing small leakage flow
+Valve conductivity Conductivity at [l/s] []
+
+[Pa|bar]
+Mass flow of fluid [kg/s]
+Enthalpy of fluid [J/kg]
+Hydraulic conductance at nominal opening [m3/h] []
+Remaining opening if closed, causing small leakage flow
+Valve conductivity Conductivity at [l/s] []
+
+[Pa|bar]
+Pressure at the connector [Pa|bar]
+Hydraulic conductance at nominal opening [m3/h] []
+Remaining opening if closed, causing small leakage flow
+Valve conductivity Conductivity at [l/s] []
+
+[Pa|bar]
+Constant output value
+Constant output value
+Constant output value
+Unit elevation - air pressure [m]
+Pressure at the connector [Pa|bar]
+Mass flow of fluid [kg/s]
+Enthalpy of fluid [J/kg]
+Mass flow of fluid [kg/s]
+Enthalpy of fluid [J/kg]
+Mass flow of fluid [kg/s]
+Enthalpy of fluid [J/kg]
+Constant output value [m]
+Pipe diameter [m]
+Maximum height of the tank [m]
+Maximum height of the tank [m]
+Inner cross section area [m2]
+[m3]
+Inner perimeter [m]
+[m]
+Accumulated potential energy [J]
+der(Accumulated potential energy) [W]
+[m]
+[m/s]
+[Pa|bar]
+Tank air pressure [Pa|bar]
+Enthalpy of fluid [J/kg]
+Enthalpy of fluid [J/kg]
+Pressure at the connector [Pa|bar]
+Enthalpy of fluid [J/kg]
+Hydraulic conductance at nominal opening [m3/h] []
+Remaining opening if closed, causing small leakage flow
+Valve conductivity Conductivity at [l/s] []
+
+[Pa|bar]
+Hydraulic conductance at nominal opening [m3/h] []
+Remaining opening if closed, causing small leakage flow
+Valve conductivity Conductivity at [l/s] []
+
+[Pa|bar]
+Hydraulic conductance at nominal opening [m3/h] []
+Remaining opening if closed, causing small leakage flow
+Valve conductivity Conductivity at [l/s] []
+
+[Pa|bar]
+Constant output value
+Constant output value
+Constant output value
+Unit elevation - air pressure [m]
+Pressure at the connector [Pa|bar]
+Mass flow of fluid [kg/s]
+Enthalpy of fluid [J/kg]
+Mass flow of fluid [kg/s]
+Enthalpy of fluid [J/kg]
+Mass flow of fluid [kg/s]
+Enthalpy of fluid [J/kg]
+Constant output value [m]
+Pipe diameter [m]
+Maximum height of the tank [m]
+Maximum height of the tank [m]
+Inner cross section area [m2]
+[m3]
+Inner perimeter [m]
+[m]
+Accumulated potential energy [J]
+der(Accumulated potential energy) [W]
+[m]
+[m/s]
+[Pa|bar]
+Tank air pressure [Pa|bar]
+Enthalpy of fluid [J/kg]
+Enthalpy of fluid [J/kg]
+Pressure at the connector [Pa|bar]
+Enthalpy of fluid [J/kg]
+Hydraulic conductance at nominal opening [m3/h] []
+Remaining opening if closed, causing small leakage flow
+Valve conductivity Conductivity at [l/s] []
+
+[Pa|bar]
+Hydraulic conductance at nominal opening [m3/h] []
+Remaining opening if closed, causing small leakage flow
+Valve conductivity Conductivity at [l/s] []
+
+[Pa|bar]
+Hydraulic conductance at nominal opening [m3/h] []
+Remaining opening if closed, causing small leakage flow
+Valve conductivity Conductivity at [l/s] []
+
+[Pa|bar]
+Constant output value
+Constant output value
+Constant output value
+Pipe Diameter C [m]
+Pipe Length C [m]
+Port temperature [K|degC]
+Heat flow rate (positive if flowing from outside into the component) [W]
+Pipe length  [m]
+Pipe diameter [m]
+Inner cross section area [m2]
+Inner perimeter [m]
+Average height of surface asperities (default: PVC pipe) [m]
+Form-loss coefficient
+volume size [m3]
+Height(port_b) - Height(port_a) [m]
+Start water temperature [K|degC]
+[J]
+Wall friction calculated based on Darcy-Weisbach equation
+Head loss due to wall friction [Pa|bar]
+Head loss due to form resistance [Pa|bar]
+Differential pressure across the pipe [Pa|bar]
+(start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow [m3/s]
+der((start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow) [m3/s2]
+[K|degC]
+[K/s]
+Port temperature [K|degC]
+Heat flow rate (positive if flowing from outside into the component) [W]
+Pipe length  [m]
+Pipe diameter [m]
+Inner cross section area [m2]
+Inner perimeter [m]
+Average height of surface asperities (default: PVC pipe) [m]
+Form-loss coefficient
+volume size [m3]
+Height(port_b) - Height(port_a) [m]
+Start water temperature [K|degC]
+[J]
+Wall friction calculated based on Darcy-Weisbach equation
+Head loss due to wall friction [Pa|bar]
+Head loss due to form resistance [Pa|bar]
+Differential pressure across the pipe [Pa|bar]
+(start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow [m3/s]
+der((start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow) [m3/s2]
+[K|degC]
+[K/s]
+Fixed heat flow rate at port [W]
+Reference temperature [K|degC]
+Temperature coefficient of heat flow rate [1/K]
+Fixed heat flow rate at port [W]
+Reference temperature [K|degC]
+Temperature coefficient of heat flow rate [1/K]
+Pressure at the connector [Pa|bar]
+Mass flow of fluid [kg/s]
+der(Mass flow of fluid) [kg/s2]
+Enthalpy of fluid [J/kg]
+Pressure at the connector [Pa|bar]
+Enthalpy of fluid [J/kg]
+[m]
+[m]
+[m]
+[m]
+[Pa|bar]
+[Pa|bar]
+[Pa|bar]
+[Pa|bar]
+[bar]
+[bar]
+[bar]
+[m3/h]
+[m3/h]
+[m3/h]
+[m3/h]
+[Pa|bar]
+[Pa|bar]
+[Pa|bar]
+[Pa|bar]
+[bar]
+[bar]
+[bar]
+[m3/h]
+[m3/h]
+[m3/h]
+[m3/h]
+[Pa|bar]
+[K|degC]
+Enthalpy of fluid [J/kg]
+[Pa|bar]
+[K|degC]
+Enthalpy of fluid [J/kg]
+Pipe Diameter A [m]
+Pipe Length A [m]
+Port temperature [K|degC]
+Heat flow rate (positive if flowing from outside into the component) [W]
+Pipe length  [m]
+Pipe diameter [m]
+Inner cross section area [m2]
+Inner perimeter [m]
+Average height of surface asperities (default: PVC pipe) [m]
+Form-loss coefficient
+volume size [m3]
+Height(port_b) - Height(port_a) [m]
+Start water temperature [K|degC]
+[J]
+Wall friction calculated based on Darcy-Weisbach equation
+Head loss due to wall friction [Pa|bar]
+Head loss due to form resistance [Pa|bar]
+Differential pressure across the pipe [Pa|bar]
+(start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow [m3/s]
+der((start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow) [m3/s2]
+[K|degC]
+[K/s]
+Port temperature [K|degC]
+Heat flow rate (positive if flowing from outside into the component) [W]
+Pipe length  [m]
+Pipe diameter [m]
+Inner cross section area [m2]
+Inner perimeter [m]
+Average height of surface asperities (default: PVC pipe) [m]
+Form-loss coefficient
+volume size [m3]
+Height(port_b) - Height(port_a) [m]
+Start water temperature [K|degC]
+[J]
+Wall friction calculated based on Darcy-Weisbach equation
+Head loss due to wall friction [Pa|bar]
+Head loss due to form resistance [Pa|bar]
+Differential pressure across the pipe [Pa|bar]
+(start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow [m3/s]
+der((start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow) [m3/s2]
+[K|degC]
+[K/s]
+Fixed heat flow rate at port [W]
+Reference temperature [K|degC]
+Temperature coefficient of heat flow rate [1/K]
+Fixed heat flow rate at port [W]
+Reference temperature [K|degC]
+Temperature coefficient of heat flow rate [1/K]
+Enthalpy of fluid [J/kg]
+Pressure at the connector [Pa|bar]
+Enthalpy of fluid [J/kg]
+Pipe Diameter C [m]
+Pipe Length C [m]
+Port temperature [K|degC]
+Heat flow rate (positive if flowing from outside into the component) [W]
+Pipe length  [m]
+Pipe diameter [m]
+Inner cross section area [m2]
+Inner perimeter [m]
+Average height of surface asperities (default: PVC pipe) [m]
+Form-loss coefficient
+volume size [m3]
+Height(port_b) - Height(port_a) [m]
+Start water temperature [K|degC]
+[J]
+Wall friction calculated based on Darcy-Weisbach equation
+Head loss due to wall friction [Pa|bar]
+Head loss due to form resistance [Pa|bar]
+Differential pressure across the pipe [Pa|bar]
+(start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow [m3/s]
+der((start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow) [m3/s2]
+[K|degC]
+[K/s]
+Port temperature [K|degC]
+Heat flow rate (positive if flowing from outside into the component) [W]
+Pipe length  [m]
+Pipe diameter [m]
+Inner cross section area [m2]
+Inner perimeter [m]
+Average height of surface asperities (default: PVC pipe) [m]
+Form-loss coefficient
+volume size [m3]
+Height(port_b) - Height(port_a) [m]
+Start water temperature [K|degC]
+[J]
+Wall friction calculated based on Darcy-Weisbach equation
+Head loss due to wall friction [Pa|bar]
+Head loss due to form resistance [Pa|bar]
+Differential pressure across the pipe [Pa|bar]
+(start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow [m3/s]
+der((start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow) [m3/s2]
+[K|degC]
+[K/s]
+Fixed heat flow rate at port [W]
+Reference temperature [K|degC]
+Temperature coefficient of heat flow rate [1/K]
+Fixed heat flow rate at port [W]
+Reference temperature [K|degC]
+Temperature coefficient of heat flow rate [1/K]
+Pressure at the connector [Pa|bar]
+Mass flow of fluid [kg/s]
+der(Mass flow of fluid) [kg/s2]
+Enthalpy of fluid [J/kg]
+Pressure at the connector [Pa|bar]
+Enthalpy of fluid [J/kg]
+Unit elevation - air pressure [m]
+Pressure at the connector [Pa|bar]
+Mass flow of fluid [kg/s]
+Enthalpy of fluid [J/kg]
+Mass flow of fluid [kg/s]
+Enthalpy of fluid [J/kg]
+Mass flow of fluid [kg/s]
+Enthalpy of fluid [J/kg]
+Constant output value [m]
+Pipe diameter [m]
+Maximum height of the tank [m]
+Maximum height of the tank [m]
+Inner cross section area [m2]
+[m3]
+Inner perimeter [m]
+[m]
+Accumulated potential energy [J]
+der(Accumulated potential energy) [W]
+[m]
+[m/s]
+[Pa|bar]
+Tank air pressure [Pa|bar]
+Enthalpy of fluid [J/kg]
+Enthalpy of fluid [J/kg]
+Pressure at the connector [Pa|bar]
+Enthalpy of fluid [J/kg]
+Hydraulic conductance at nominal opening [m3/h] []
+Remaining opening if closed, causing small leakage flow
+Valve conductivity Conductivity at [l/s] []
+
+[Pa|bar]
+Hydraulic conductance at nominal opening [m3/h] []
+Remaining opening if closed, causing small leakage flow
+Valve conductivity Conductivity at [l/s] []
+
+[Pa|bar]
+Hydraulic conductance at nominal opening [m3/h] []
+Remaining opening if closed, causing small leakage flow
+Valve conductivity Conductivity at [l/s] []
+
+[Pa|bar]
+Constant output value
+Constant output value
+Constant output value
+[Pa|bar]
+[K|degC]
+Enthalpy of fluid [J/kg]
+Pipe Diameter C [m]
+Pipe Length C [m]
+Port temperature [K|degC]
+Heat flow rate (positive if flowing from outside into the component) [W]
+Pipe length  [m]
+Pipe diameter [m]
+Inner cross section area [m2]
+Inner perimeter [m]
+Average height of surface asperities (default: PVC pipe) [m]
+Form-loss coefficient
+volume size [m3]
+Height(port_b) - Height(port_a) [m]
+Start water temperature [K|degC]
+[J]
+Wall friction calculated based on Darcy-Weisbach equation
+Head loss due to wall friction [Pa|bar]
+Head loss due to form resistance [Pa|bar]
+Differential pressure across the pipe [Pa|bar]
+(start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow [m3/s]
+der((start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow) [m3/s2]
+[K|degC]
+[K/s]
+Port temperature [K|degC]
+Heat flow rate (positive if flowing from outside into the component) [W]
+Pipe length  [m]
+Pipe diameter [m]
+Inner cross section area [m2]
+Inner perimeter [m]
+Average height of surface asperities (default: PVC pipe) [m]
+Form-loss coefficient
+volume size [m3]
+Height(port_b) - Height(port_a) [m]
+Start water temperature [K|degC]
+[J]
+Wall friction calculated based on Darcy-Weisbach equation
+Head loss due to wall friction [Pa|bar]
+Head loss due to form resistance [Pa|bar]
+Differential pressure across the pipe [Pa|bar]
+(start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow [m3/s]
+der((start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow) [m3/s2]
+[K|degC]
+[K/s]
+Fixed heat flow rate at port [W]
+Reference temperature [K|degC]
+Temperature coefficient of heat flow rate [1/K]
+Fixed heat flow rate at port [W]
+Reference temperature [K|degC]
+Temperature coefficient of heat flow rate [1/K]
+Pressure at the connector [Pa|bar]
+Mass flow of fluid [kg/s]
+der(Mass flow of fluid) [kg/s2]
+Enthalpy of fluid [J/kg]
+Pressure at the connector [Pa|bar]
+Enthalpy of fluid [J/kg]
+Pipe Diameter A [m]
+Pipe Length A [m]
+Port temperature [K|degC]
+Heat flow rate (positive if flowing from outside into the component) [W]
+Pipe length  [m]
+Pipe diameter [m]
+Inner cross section area [m2]
+Inner perimeter [m]
+Average height of surface asperities (default: PVC pipe) [m]
+Form-loss coefficient
+volume size [m3]
+Height(port_b) - Height(port_a) [m]
+Start water temperature [K|degC]
+[J]
+Wall friction calculated based on Darcy-Weisbach equation
+Head loss due to wall friction [Pa|bar]
+Head loss due to form resistance [Pa|bar]
+Differential pressure across the pipe [Pa|bar]
+(start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow [m3/s]
+der((start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow) [m3/s2]
+[K|degC]
+[K/s]
+Port temperature [K|degC]
+Heat flow rate (positive if flowing from outside into the component) [W]
+Pipe length  [m]
+Pipe diameter [m]
+Inner cross section area [m2]
+Inner perimeter [m]
+Average height of surface asperities (default: PVC pipe) [m]
+Form-loss coefficient
+volume size [m3]
+Height(port_b) - Height(port_a) [m]
+Start water temperature [K|degC]
+[J]
+Wall friction calculated based on Darcy-Weisbach equation
+Head loss due to wall friction [Pa|bar]
+Head loss due to form resistance [Pa|bar]
+Differential pressure across the pipe [Pa|bar]
+(start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow [m3/s]
+der((start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow) [m3/s2]
+[K|degC]
+[K/s]
+Fixed heat flow rate at port [W]
+Reference temperature [K|degC]
+Temperature coefficient of heat flow rate [1/K]
+Fixed heat flow rate at port [W]
+Reference temperature [K|degC]
+Temperature coefficient of heat flow rate [1/K]
+Mass flow of fluid [kg/s]
+der(Mass flow of fluid) [kg/s2]
+Enthalpy of fluid [J/kg]
+Enthalpy of fluid [J/kg]
+[kg/s]
+[K|degC]
+Pressure at the connector [Pa|bar]
+Enthalpy of fluid [J/kg]
+Pipe diameter [m]
+Maximum height of the tank [m]
+Maximum height of the tank [m]
+Inner cross section area [m2]
+Inner perimeter [m]
+[m]
+Accumulated potential energy [J]
+der(Accumulated potential energy) [W]
+[m]
+[m/s]
+[Pa|bar]
+Pressure at the connector [Pa|bar]
+Enthalpy of fluid [J/kg]
+Pressure at the connector [Pa|bar]
+Mass flow of fluid [kg/s]
+Enthalpy of fluid [J/kg]
+Enthalpy of fluid [J/kg]
+Pressure at the connector [Pa|bar]
+Mass flow of fluid [kg/s]
+der(Mass flow of fluid) [kg/s2]
+Enthalpy of fluid [J/kg]
+Mass flow of fluid [kg/s]
+Enthalpy of fluid [J/kg]
+Pressure at the connector [Pa|bar]
+Constant q*q
+Constant omega*q
+Constant omega*omega
+[m3/s|m3/h]
+[m]
+[Pa|bar]
+volumetric flow [m3/s|m3/h]
+Mass flow of fluid [kg/s]
+Enthalpy of fluid [J/kg]
+Constant q*q
+Constant omega*q
+Constant omega*omega
+[m3/s|m3/h]
+[m]
+[Pa|bar]
+volumetric flow [m3/s|m3/h]
+Constant output value
+Opening Degree of Output Valve 2
+Hydraulic conductance at nominal opening [m3/h] []
+Remaining opening if closed, causing small leakage flow
+Valve conductivity Conductivity at [l/s] []
+
+[Pa|bar]
+Mass flow of fluid [kg/s]
+Enthalpy of fluid [J/kg]
+Hydraulic conductance at nominal opening [m3/h] []
+Remaining opening if closed, causing small leakage flow
+Valve conductivity Conductivity at [l/s] []
+
+[Pa|bar]
+Pressure at the connector [Pa|bar]
+Hydraulic conductance at nominal opening [m3/h] []
+Remaining opening if closed, causing small leakage flow
+Valve conductivity Conductivity at [l/s] []
+
+[Pa|bar]
+Constant output value
+Constant output value
+Constant output value
+Unit elevation - air pressure [m]
+Pressure at the connector [Pa|bar]
+Mass flow of fluid [kg/s]
+Enthalpy of fluid [J/kg]
+Mass flow of fluid [kg/s]
+Enthalpy of fluid [J/kg]
+Mass flow of fluid [kg/s]
+Enthalpy of fluid [J/kg]
+Constant output value [m]
+Pipe diameter [m]
+Maximum height of the tank [m]
+Maximum height of the tank [m]
+Inner cross section area [m2]
+[m3]
+Inner perimeter [m]
+[m]
+Accumulated potential energy [J]
+der(Accumulated potential energy) [W]
+[m]
+[m/s]
+[Pa|bar]
+Tank air pressure [Pa|bar]
+Enthalpy of fluid [J/kg]
+Enthalpy of fluid [J/kg]
+Pressure at the connector [Pa|bar]
+Enthalpy of fluid [J/kg]
+Hydraulic conductance at nominal opening [m3/h] []
+Remaining opening if closed, causing small leakage flow
+Valve conductivity Conductivity at [l/s] []
+
+[Pa|bar]
+Hydraulic conductance at nominal opening [m3/h] []
+Remaining opening if closed, causing small leakage flow
+Valve conductivity Conductivity at [l/s] []
+
+[Pa|bar]
+Hydraulic conductance at nominal opening [m3/h] []
+Remaining opening if closed, causing small leakage flow
+Valve conductivity Conductivity at [l/s] []
+
+[Pa|bar]
+Constant output value
+Constant output value
+Constant output value
+Unit elevation - air pressure [m]
+Pressure at the connector [Pa|bar]
+Mass flow of fluid [kg/s]
+Enthalpy of fluid [J/kg]
+Mass flow of fluid [kg/s]
+Enthalpy of fluid [J/kg]
+Mass flow of fluid [kg/s]
+Enthalpy of fluid [J/kg]
+Constant output value [m]
+Pipe diameter [m]
+Maximum height of the tank [m]
+Maximum height of the tank [m]
+Inner cross section area [m2]
+[m3]
+Inner perimeter [m]
+[m]
+Accumulated potential energy [J]
+der(Accumulated potential energy) [W]
+[m]
+[m/s]
+[Pa|bar]
+Tank air pressure [Pa|bar]
+Enthalpy of fluid [J/kg]
+Enthalpy of fluid [J/kg]
+Pressure at the connector [Pa|bar]
+Enthalpy of fluid [J/kg]
+Hydraulic conductance at nominal opening [m3/h] []
+Remaining opening if closed, causing small leakage flow
+Valve conductivity Conductivity at [l/s] []
+
+[Pa|bar]
+Hydraulic conductance at nominal opening [m3/h] []
+Remaining opening if closed, causing small leakage flow
+Valve conductivity Conductivity at [l/s] []
+
+[Pa|bar]
+Hydraulic conductance at nominal opening [m3/h] []
+Remaining opening if closed, causing small leakage flow
+Valve conductivity Conductivity at [l/s] []
+
+[Pa|bar]
+Constant output value
+Constant output value
+Constant output value
+[Pa|bar]
+[K|degC]
+Enthalpy of fluid [J/kg]
+[Pa|bar]
+[K|degC]
+Enthalpy of fluid [J/kg]
+Unit elevation - air pressure [m]
+Pressure at the connector [Pa|bar]
+Mass flow of fluid [kg/s]
+Enthalpy of fluid [J/kg]
+Mass flow of fluid [kg/s]
+Enthalpy of fluid [J/kg]
+Mass flow of fluid [kg/s]
+Enthalpy of fluid [J/kg]
+Constant output value [m]
+Pipe diameter [m]
+Maximum height of the tank [m]
+Maximum height of the tank [m]
+Inner cross section area [m2]
+[m3]
+Inner perimeter [m]
+[m]
+Accumulated potential energy [J]
+der(Accumulated potential energy) [W]
+[m]
+[m/s]
+[Pa|bar]
+Tank air pressure [Pa|bar]
+Enthalpy of fluid [J/kg]
+Enthalpy of fluid [J/kg]
+Pressure at the connector [Pa|bar]
+Enthalpy of fluid [J/kg]
+Hydraulic conductance at nominal opening [m3/h] []
+Remaining opening if closed, causing small leakage flow
+Valve conductivity Conductivity at [l/s] []
+
+[Pa|bar]
+Hydraulic conductance at nominal opening [m3/h] []
+Remaining opening if closed, causing small leakage flow
+Valve conductivity Conductivity at [l/s] []
+
+[Pa|bar]
+Hydraulic conductance at nominal opening [m3/h] []
+Remaining opening if closed, causing small leakage flow
+Valve conductivity Conductivity at [l/s] []
+
+[Pa|bar]
+Constant output value
+Constant output value
+Constant output value
+[Pa|bar]
+[K|degC]
+Enthalpy of fluid [J/kg]
+Pipe Diameter A [m]
+Pipe section length A [m]
+Number of pipe sections 1 [1]
+Number of pipe sections 2 [1]
+Pressure at the connector [Pa|bar]
+Port temperature [K|degC]
+Heat flow rate (positive if flowing from outside into the component) [W]
+Pipe length  [m]
+Pipe diameter [m]
+Inner cross section area [m2]
+Inner perimeter [m]
+Average height of surface asperities (default: PVC pipe) [m]
+Form-loss coefficient
+volume size [m3]
+Height(port_b) - Height(port_a) [m]
+Start water temperature [K|degC]
+[J]
+Wall friction calculated based on Darcy-Weisbach equation
+Head loss due to wall friction [Pa|bar]
+Head loss due to form resistance [Pa|bar]
+Differential pressure across the pipe [Pa|bar]
+(start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow [m3/s]
+der((start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow) [m3/s2]
+[K|degC]
+[K/s]
+Pressure at the connector [Pa|bar]
+Port temperature [K|degC]
+Heat flow rate (positive if flowing from outside into the component) [W]
+Pipe length  [m]
+Pipe diameter [m]
+Inner cross section area [m2]
+Inner perimeter [m]
+Average height of surface asperities (default: PVC pipe) [m]
+Form-loss coefficient
+volume size [m3]
+Height(port_b) - Height(port_a) [m]
+Start water temperature [K|degC]
+[J]
+Wall friction calculated based on Darcy-Weisbach equation
+Head loss due to wall friction [Pa|bar]
+Head loss due to form resistance [Pa|bar]
+Differential pressure across the pipe [Pa|bar]
+(start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow [m3/s]
+der((start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow) [m3/s2]
+[K|degC]
+[K/s]
+Fixed heat flow rate at port [W]
+Reference temperature [K|degC]
+Temperature coefficient of heat flow rate [1/K]
+Fixed heat flow rate at port [W]
+Reference temperature [K|degC]
+Temperature coefficient of heat flow rate [1/K]
+Pressure at the connector [Pa|bar]
+Mass flow of fluid [kg/s]
+der(Mass flow of fluid) [kg/s2]
+Enthalpy of fluid [J/kg]
+Pressure at the connector [Pa|bar]
+Enthalpy of fluid [J/kg]
+Enthalpy of fluid [J/kg]
+Enthalpy of fluid [J/kg]
+Nominal Opening Degree
+Nominal pressure drop at nominal Opening Degree [Pa|bar]
+Nominal mass flowrate at nominal Opening Degree [kg/s]
+Remaining opening if closed, causing small leakage flow
+Hydraulic conductance at nominal Opening Degree
+[Pa|bar]
+
+Constant output value
+Nominal Opening Degree
+Nominal pressure drop at nominal Opening Degree [Pa|bar]
+Nominal mass flowrate at nominal Opening Degree [kg/s]
+Remaining opening if closed, causing small leakage flow
+Hydraulic conductance at nominal Opening Degree
+[Pa|bar]
+
+Constant output value
+Pipe Diameter A [m]
+Pipe section length A [m]
+Number of pipe sections 1 [1]
+Number of pipe sections 2 [1]
+Pressure at the connector [Pa|bar]
+Port temperature [K|degC]
+Heat flow rate (positive if flowing from outside into the component) [W]
+Pipe length  [m]
+Pipe diameter [m]
+Inner cross section area [m2]
+Inner perimeter [m]
+Average height of surface asperities (default: PVC pipe) [m]
+Form-loss coefficient
+volume size [m3]
+Height(port_b) - Height(port_a) [m]
+Start water temperature [K|degC]
+[J]
+Wall friction calculated based on Darcy-Weisbach equation
+Head loss due to wall friction [Pa|bar]
+Head loss due to form resistance [Pa|bar]
+Differential pressure across the pipe [Pa|bar]
+(start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow [m3/s]
+der((start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow) [m3/s2]
+[K|degC]
+[K/s]
+Pressure at the connector [Pa|bar]
+Port temperature [K|degC]
+Heat flow rate (positive if flowing from outside into the component) [W]
+Pipe length  [m]
+Pipe diameter [m]
+Inner cross section area [m2]
+Inner perimeter [m]
+Average height of surface asperities (default: PVC pipe) [m]
+Form-loss coefficient
+volume size [m3]
+Height(port_b) - Height(port_a) [m]
+Start water temperature [K|degC]
+[J]
+Wall friction calculated based on Darcy-Weisbach equation
+Head loss due to wall friction [Pa|bar]
+Head loss due to form resistance [Pa|bar]
+Differential pressure across the pipe [Pa|bar]
+(start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow [m3/s]
+der((start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow) [m3/s2]
+[K|degC]
+[K/s]
+Fixed heat flow rate at port [W]
+Reference temperature [K|degC]
+Temperature coefficient of heat flow rate [1/K]
+Fixed heat flow rate at port [W]
+Reference temperature [K|degC]
+Temperature coefficient of heat flow rate [1/K]
+Pressure at the connector [Pa|bar]
+Mass flow of fluid [kg/s]
+der(Mass flow of fluid) [kg/s2]
+Enthalpy of fluid [J/kg]
+Pressure at the connector [Pa|bar]
+Enthalpy of fluid [J/kg]
+Enthalpy of fluid [J/kg]
+Enthalpy of fluid [J/kg]
+Nominal Opening Degree
+Nominal pressure drop at nominal Opening Degree [Pa|bar]
+Nominal mass flowrate at nominal Opening Degree [kg/s]
+Remaining opening if closed, causing small leakage flow
+Hydraulic conductance at nominal Opening Degree
+[Pa|bar]
+
+Constant output value
+Nominal Opening Degree
+Nominal pressure drop at nominal Opening Degree [Pa|bar]
+Nominal mass flowrate at nominal Opening Degree [kg/s]
+Remaining opening if closed, causing small leakage flow
+Hydraulic conductance at nominal Opening Degree
+[Pa|bar]
+
+Constant output value
+Pipe Diameter A [m]
+Pipe section length A [m]
+Number of pipe sections 1 [1]
+Number of pipe sections 2 [1]
+Pressure at the connector [Pa|bar]
+Port temperature [K|degC]
+Heat flow rate (positive if flowing from outside into the component) [W]
+Pipe length  [m]
+Pipe diameter [m]
+Inner cross section area [m2]
+Inner perimeter [m]
+Average height of surface asperities (default: PVC pipe) [m]
+Form-loss coefficient
+volume size [m3]
+Height(port_b) - Height(port_a) [m]
+Start water temperature [K|degC]
+[J]
+Wall friction calculated based on Darcy-Weisbach equation
+Head loss due to wall friction [Pa|bar]
+Head loss due to form resistance [Pa|bar]
+Differential pressure across the pipe [Pa|bar]
+(start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow [m3/s]
+der((start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow) [m3/s2]
+[K|degC]
+[K/s]
+Pressure at the connector [Pa|bar]
+Port temperature [K|degC]
+Heat flow rate (positive if flowing from outside into the component) [W]
+Pipe length  [m]
+Pipe diameter [m]
+Inner cross section area [m2]
+Inner perimeter [m]
+Average height of surface asperities (default: PVC pipe) [m]
+Form-loss coefficient
+volume size [m3]
+Height(port_b) - Height(port_a) [m]
+Start water temperature [K|degC]
+[J]
+Wall friction calculated based on Darcy-Weisbach equation
+Head loss due to wall friction [Pa|bar]
+Head loss due to form resistance [Pa|bar]
+Differential pressure across the pipe [Pa|bar]
+(start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow [m3/s]
+der((start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow) [m3/s2]
+[K|degC]
+[K/s]
+Fixed heat flow rate at port [W]
+Reference temperature [K|degC]
+Temperature coefficient of heat flow rate [1/K]
+Fixed heat flow rate at port [W]
+Reference temperature [K|degC]
+Temperature coefficient of heat flow rate [1/K]
+Enthalpy of fluid [J/kg]
+Pressure at the connector [Pa|bar]
+Enthalpy of fluid [J/kg]
+Enthalpy of fluid [J/kg]
+Enthalpy of fluid [J/kg]
+Nominal Opening Degree
+Nominal pressure drop at nominal Opening Degree [Pa|bar]
+Nominal mass flowrate at nominal Opening Degree [kg/s]
+Remaining opening if closed, causing small leakage flow
+Hydraulic conductance at nominal Opening Degree
+[Pa|bar]
+
+Constant output value
+Nominal Opening Degree
+Nominal pressure drop at nominal Opening Degree [Pa|bar]
+Nominal mass flowrate at nominal Opening Degree [kg/s]
+Remaining opening if closed, causing small leakage flow
+Hydraulic conductance at nominal Opening Degree
+[Pa|bar]
+
+Constant output value
+Pipe Diameter A [m]
+Pipe section length A [m]
+Number of pipe sections 1 [1]
+Number of pipe sections 2 [1]
+Pressure at the connector [Pa|bar]
+Port temperature [K|degC]
+Heat flow rate (positive if flowing from outside into the component) [W]
+Pipe length  [m]
+Pipe diameter [m]
+Inner cross section area [m2]
+Inner perimeter [m]
+Average height of surface asperities (default: PVC pipe) [m]
+Form-loss coefficient
+volume size [m3]
+Height(port_b) - Height(port_a) [m]
+Start water temperature [K|degC]
+[J]
+Wall friction calculated based on Darcy-Weisbach equation
+Head loss due to wall friction [Pa|bar]
+Head loss due to form resistance [Pa|bar]
+Differential pressure across the pipe [Pa|bar]
+(start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow [m3/s]
+der((start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow) [m3/s2]
+[K|degC]
+[K/s]
+Pressure at the connector [Pa|bar]
+Port temperature [K|degC]
+Heat flow rate (positive if flowing from outside into the component) [W]
+Pipe length  [m]
+Pipe diameter [m]
+Inner cross section area [m2]
+Inner perimeter [m]
+Average height of surface asperities (default: PVC pipe) [m]
+Form-loss coefficient
+volume size [m3]
+Height(port_b) - Height(port_a) [m]
+Start water temperature [K|degC]
+[J]
+Wall friction calculated based on Darcy-Weisbach equation
+Head loss due to wall friction [Pa|bar]
+Head loss due to form resistance [Pa|bar]
+Differential pressure across the pipe [Pa|bar]
+(start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow [m3/s]
+der((start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow) [m3/s2]
+[K|degC]
+[K/s]
+Fixed heat flow rate at port [W]
+Reference temperature [K|degC]
+Temperature coefficient of heat flow rate [1/K]
+Fixed heat flow rate at port [W]
+Reference temperature [K|degC]
+Temperature coefficient of heat flow rate [1/K]
+Mass flow of fluid [kg/s]
+der(Mass flow of fluid) [kg/s2]
+Enthalpy of fluid [J/kg]
+Mass flow of fluid [kg/s]
+der(Mass flow of fluid) [kg/s2]
+Enthalpy of fluid [J/kg]
+Enthalpy of fluid [J/kg]
+Pressure at the connector [Pa|bar]
+Enthalpy of fluid [J/kg]
+Nominal Opening Degree
+Nominal pressure drop at nominal Opening Degree [Pa|bar]
+Nominal mass flowrate at nominal Opening Degree [kg/s]
+Remaining opening if closed, causing small leakage flow
+Hydraulic conductance at nominal Opening Degree
+[Pa|bar]
+
+Constant output value
+Nominal Opening Degree
+Nominal pressure drop at nominal Opening Degree [Pa|bar]
+Nominal mass flowrate at nominal Opening Degree [kg/s]
+Remaining opening if closed, causing small leakage flow
+Hydraulic conductance at nominal Opening Degree
+[Pa|bar]
+
+Constant output value
+Pipe Diameter A [m]
+Pipe section length A [m]
+Number of pipe sections 1 [1]
+Number of pipe sections 2 [1]
+Pressure at the connector [Pa|bar]
+Port temperature [K|degC]
+Heat flow rate (positive if flowing from outside into the component) [W]
+Pipe length  [m]
+Pipe diameter [m]
+Inner cross section area [m2]
+Inner perimeter [m]
+Average height of surface asperities (default: PVC pipe) [m]
+Form-loss coefficient
+volume size [m3]
+Height(port_b) - Height(port_a) [m]
+Start water temperature [K|degC]
+[J]
+Wall friction calculated based on Darcy-Weisbach equation
+Head loss due to wall friction [Pa|bar]
+Head loss due to form resistance [Pa|bar]
+Differential pressure across the pipe [Pa|bar]
+(start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow [m3/s]
+der((start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow) [m3/s2]
+[K|degC]
+[K/s]
+Pressure at the connector [Pa|bar]
+Port temperature [K|degC]
+Heat flow rate (positive if flowing from outside into the component) [W]
+Pipe length  [m]
+Pipe diameter [m]
+Inner cross section area [m2]
+Inner perimeter [m]
+Average height of surface asperities (default: PVC pipe) [m]
+Form-loss coefficient
+volume size [m3]
+Height(port_b) - Height(port_a) [m]
+Start water temperature [K|degC]
+[J]
+Wall friction calculated based on Darcy-Weisbach equation
+Head loss due to wall friction [Pa|bar]
+Head loss due to form resistance [Pa|bar]
+Differential pressure across the pipe [Pa|bar]
+(start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow [m3/s]
+der((start = 1e-3, fixed = true, nominal = 1e-3, stateSelect=StateSelect.always) volumetric flow) [m3/s2]
+[K|degC]
+[K/s]
+Fixed heat flow rate at port [W]
+Reference temperature [K|degC]
+Temperature coefficient of heat flow rate [1/K]
+Fixed heat flow rate at port [W]
+Reference temperature [K|degC]
+Temperature coefficient of heat flow rate [1/K]
+Enthalpy of fluid [J/kg]
+Pressure at the connector [Pa|bar]
+Enthalpy of fluid [J/kg]
+Enthalpy of fluid [J/kg]
+Enthalpy of fluid [J/kg]
+Nominal Opening Degree
+Nominal pressure drop at nominal Opening Degree [Pa|bar]
+Nominal mass flowrate at nominal Opening Degree [kg/s]
+Remaining opening if closed, causing small leakage flow
+Hydraulic conductance at nominal Opening Degree
+[Pa|bar]
+
+Constant output value
+Nominal Opening Degree
+Nominal pressure drop at nominal Opening Degree [Pa|bar]
+Nominal mass flowrate at nominal Opening Degree [kg/s]
+Remaining opening if closed, causing small leakage flow
+Hydraulic conductance at nominal Opening Degree
+[Pa|bar]
+
+Constant output value
+
